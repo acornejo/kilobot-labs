@@ -1,13 +1,8 @@
-#include "kilolib.h"
+#include <kilolib.h>
 
-// Pure Listener 
-// to show when messages are being transmitted by neighboring robots
+uint8_t new_message = 0;
 
-// Recieve: If new_message == 1, then a new message was recieved. 
-// Must reset new_message after you've read it in the program
-// Note that old messages get overwritten by new ones.
-// Called when the messaging subsystem receives a message
-int new_message = 0;
+// turn flag on message reception
 void message_rx(message_t *msg, distance_measurement_t *dist) {
     new_message = 1;
 }
