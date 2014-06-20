@@ -1,4 +1,4 @@
-TARGETS = orbit-star orbit-planet movetolight
+TARGETS = orbit-star orbit-planet movetolight gradient
 
 all: $(TARGETS)
 .PHONY: $(TARGETS)
@@ -6,6 +6,7 @@ all: $(TARGETS)
 orbit-star: build/orbit-star.elf build/orbit-star.hex build/orbit-star.lss
 orbit-planet: build/orbit-planet.elf build/orbit-planet.hex build/orbit-planet.lss
 movetolight: build/movetolight.elf build/movetolight.hex build/movetolight.lss
+gradient: build/gradient.elf build/gradient.hex build/gradient.lss
 
 CC = avr-gcc
 AVROC = avr-objcopy
