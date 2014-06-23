@@ -1,11 +1,13 @@
 #include <kilolib.h>
+#define DEBUG
+#include <debug.h>
 
 #define THRESH_HIGH 5
 #define THRESH_LOW 5
 
 int cur_direction = 0;
-int cur_light = 0;
-int high_thresh = 0, low_thresh = 1024;
+long cur_light = 0;
+long  high_thresh = 0, low_thresh = 1024;
 
 void sample_light() {
     int i;
@@ -40,32 +42,32 @@ void update_thresh() {
 }
 
 void compute_direction() {
-    if (cur_light < low_thresh)
+    if (cur_light < low_thresh) {
+        printf("LOW cur: %ld, high: %ld, low: %ld\n", cur_light, high_thresh, low_thresh);
         update_thresh();
-    else if (cur_light > high_thresh) {
+    } else if (cur_light > high_thresh) {
+        printf("HIGH cur: %ld, high: %ld, low: %ld\n", cur_light, high_thresh, low_thresh);
         update_thresh();
         switch_directions();
-        delay(100); // to avoid fast switches
+        delay(300); // to avoid fast switches
+    } else {
+        printf("MID cur: %ld, high: %ld, low: %ld\n", cur_light, high_thresh, low_thresh);
     }
 }
 
 void setup() {
     switch_directions(); // start turning in any direction
+    delay(1000);
 }
 
 void loop() {
-    static int start = 0;
-    if (!start) {
-        start = 1;
-        switch_directions();
-    } else {
-        sample_light();
-        compute_direction();
-    }
+    sample_light();
+    compute_direction();
 }
 
 int main() {
     kilo_init();
+    debug_init();
     kilo_start(setup, loop);
 
     return 0;

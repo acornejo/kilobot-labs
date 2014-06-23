@@ -1,6 +1,6 @@
 #include <kilolib.h>
 
-uint16_t gradient_value = 10000;
+uint16_t gradient_value = UINT16_MAX;
 uint16_t recvd_gradient = 0;
 uint8_t new_message = 0;
 message_t msg;

@@ -11,9 +11,8 @@ void setup() {
     // put your setup code here, to be run only once
 }
 
-// Your program loop
 void loop() {
-    // Blink led yellow when you get a message
+    // Blink led yellow when on message received
     if (new_message) {
         new_message = 0;
         set_color(RGB(1,1,0));

@@ -1,8 +1,10 @@
-TARGETS = orbit-star orbit-planet movetolight gradient
+TARGETS = test-speaker test-listener orbit-star orbit-planet movetolight gradient
 
 all: $(TARGETS)
 .PHONY: $(TARGETS)
 
+test-speaker: build/test-speaker.elf build/test-speaker.hex build/test-speaker.lss
+test-listener: build/test-listener.elf build/test-listener.hex build/test-listener.lss
 orbit-star: build/orbit-star.elf build/orbit-star.hex build/orbit-star.lss
 orbit-planet: build/orbit-planet.elf build/orbit-planet.hex build/orbit-planet.lss
 movetolight: build/movetolight.elf build/movetolight.hex build/movetolight.lss
