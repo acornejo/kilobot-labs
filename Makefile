@@ -1,4 +1,4 @@
-TARGETS = test-speaker test-listener orbit-star orbit-planet movetolight gradient sync
+TARGETS = test-speaker test-listener orbit-star orbit-planet movetolight gradient sync blinkleds simple-movement
 
 all: $(TARGETS)
 .PHONY: $(TARGETS)
@@ -10,6 +10,8 @@ orbit-planet: build/orbit-planet.elf build/orbit-planet.hex build/orbit-planet.l
 movetolight: build/movetolight.elf build/movetolight.hex build/movetolight.lss
 gradient: build/gradient.elf build/gradient.hex build/gradient.lss
 sync: build/sync.elf build/sync.hex build/sync.lss
+blinkleds: build/blinkleds.elf build/blinkleds.hex build/blinkleds.lss
+simple-movement: build/simple-movement.elf build/simple-movement.hex build/simple-movement.lss
 
 CC = avr-gcc -std=c99
 AVROC = avr-objcopy
