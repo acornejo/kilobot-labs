@@ -1,4 +1,4 @@
-TARGETS = test-speaker test-listener orbit-star orbit-planet movetolight gradient
+TARGETS = test-speaker test-listener orbit-star orbit-planet movetolight gradient sync
 
 all: $(TARGETS)
 .PHONY: $(TARGETS)
@@ -9,8 +9,9 @@ orbit-star: build/orbit-star.elf build/orbit-star.hex build/orbit-star.lss
 orbit-planet: build/orbit-planet.elf build/orbit-planet.hex build/orbit-planet.lss
 movetolight: build/movetolight.elf build/movetolight.hex build/movetolight.lss
 gradient: build/gradient.elf build/gradient.hex build/gradient.lss
+sync: build/sync.elf build/sync.hex build/sync.lss
 
-CC = avr-gcc
+CC = avr-gcc -std=c99
 AVROC = avr-objcopy
 AVROD = avr-objdump
 AVRUP = avrdude
