@@ -56,14 +56,13 @@ void compute_direction() {
 }
 
 void setup() {
-    /* switch_directions(); // start turning in any direction */
-    /* delay(1000); */
+    switch_directions(); // start turning in any direction
+    delay(1000);
 }
 
 void loop() {
-    printf("%d\n", rand_hard());
-    /* sample_light(); */
-    /* compute_direction(); */
+    sample_light();
+    compute_direction();
 }
 
 int main() {
