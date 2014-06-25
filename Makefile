@@ -1,10 +1,12 @@
-TARGETS = test-speaker test-listener orbit-star orbit-planet movetolight gradient sync blinkleds simple-movement nonblocked-movement
+TARGETS = test-speaker test-listener orbit-star orbit-planet movetolight gradient sync blinkleds simple-movement nonblocked-movement test-speaker-mod test-listener-mod transmit-receive-randmotion
 
 all: $(TARGETS)
 .PHONY: $(TARGETS)
 
 test-speaker: build/test-speaker.elf build/test-speaker.hex build/test-speaker.lss
 test-listener: build/test-listener.elf build/test-listener.hex build/test-listener.lss
+test-speaker-mod: build/test-speaker-mod.elf build/test-speaker-mod.hex build/test-speaker-mod.lss
+test-listener-mod: build/test-listener-mod.elf build/test-listener-mod.hex build/test-listener-mod.lss
 orbit-star: build/orbit-star.elf build/orbit-star.hex build/orbit-star.lss
 orbit-planet: build/orbit-planet.elf build/orbit-planet.hex build/orbit-planet.lss
 movetolight: build/movetolight.elf build/movetolight.hex build/movetolight.lss
@@ -13,6 +15,7 @@ sync: build/sync.elf build/sync.hex build/sync.lss
 blinkleds: build/blinkleds.elf build/blinkleds.hex build/blinkleds.lss
 simple-movement: build/simple-movement.elf build/simple-movement.hex build/simple-movement.lss
 nonblocked-movement: build/nonblocked-movement.elf build/nonblocked-movement.hex build/nonblocked-movement.lss
+transmit-receive-randmotion: build/transmit-receive-randmotion.elf build/transmit-receive-randmotion.hex build/transmit-receive-randmotion.lss
 
 CC = avr-gcc -std=c99
 AVROC = avr-objcopy
