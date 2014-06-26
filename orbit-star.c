@@ -1,13 +1,13 @@
 #include <kilolib.h>
 
-// declare message to transmit
-message_t transmit_msg;
+// declare variables
+message_t msg;
 uint8_t sent_message = 0;
 
 void setup() {
     // initialize empty beacon message
-    transmit_msg.type = NORMAL;
-    transmit_msg.crc = message_crc(&transmit_msg);
+    msg.type = NORMAL;
+    msg.crc = message_crc(&msg);
 }
 
 void loop() {
@@ -20,8 +20,7 @@ void loop() {
 }
 
 message_t *message_tx() {
-    // transmit beacon message
-    return &transmit_msg;
+    return &msg;
 } 
 
 void message_tx_success() {
@@ -29,12 +28,9 @@ void message_tx_success() {
 }
 
 int main() {
-    // initialize hardware
     kilo_init();
-    // register message_tx function
     kilo_message_tx = message_tx;
     kilo_message_tx_success = message_tx_success;
-    // register your program
     kilo_start(setup, loop);
 
     return 0;

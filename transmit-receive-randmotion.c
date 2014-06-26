@@ -1,6 +1,6 @@
 #include <kilolib.h>
 
-// Declare state variable type to control motion.
+// declare motion state variable type
 typedef enum {
     STOP = 0,
     FORWARD,
@@ -8,9 +8,12 @@ typedef enum {
     RIGHT
 } motion_t;
 
+// declare variables
 motion_t cur_motion = STOP;
+uint8_t new_message = 0;
+message_t msg;
 
-// Function to set new motion
+// function to set new motion
 void set_motion(motion_t new_motion) {
     if (cur_motion != new_motion) {
         cur_motion = new_motion;
@@ -34,17 +37,7 @@ void set_motion(motion_t new_motion) {
     }
 }
 
-uint8_t new_message = 0;
-message_t msg;
-
-void message_rx(message_t *m, distance_measurement_t *d) {
-    new_message = 1;
-}
-
-message_t *message_tx() {
-    return &msg;
-}
-
+// initialize empty message
 void setup() {
     msg.type = NORMAL;
     msg.crc = message_crc(&msg);
@@ -52,7 +45,8 @@ void setup() {
 
 void loop() {
     if (new_message) {
-        uint8_t rand_direction = rand_soft()&0b00000011;
+        const uint8_t twobit_mask = 0b00000011;
+        uint8_t rand_direction = rand_soft()&twobit_mask;
         if (rand_direction == 0 || rand_direction == 1)
             set_motion(FORWARD);
         else if (rand_direction == 2)
@@ -65,13 +59,18 @@ void loop() {
     }
 }
 
+void message_rx(message_t *m, distance_measurement_t *d) {
+    new_message = 1;
+}
+
+message_t *message_tx() {
+    return &msg;
+}
+
 int main() {
-    // initialize hardware
     kilo_init();
-    // register message callbacks
     kilo_message_rx = message_rx;
     kilo_message_tx = message_tx;
-    // register your program
     kilo_start(setup, loop);
 
     return 0;

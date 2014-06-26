@@ -1,20 +1,12 @@
 #include <kilolib.h>
 
+// declare variables
 uint8_t new_message = 0;
 uint8_t odd = 0;
 uint8_t dist = 0;
 distance_measurement_t dist_measure;
 
-// turn flag on message reception
-void message_rx(message_t *m, distance_measurement_t *d) {
-    odd = m->data[0];
-    dist_measure = *d;
-    new_message = 1;
-}
-
-void setup() {
-    // put your setup code here, to be run only once
-}
+void setup() { }
 
 void loop() {
     // Blink led yellow when on message received
@@ -37,12 +29,16 @@ void loop() {
     }
 }
 
+// update even an odd with message reception
+void message_rx(message_t *m, distance_measurement_t *d) {
+    odd = m->data[0];
+    dist_measure = *d;
+    new_message = 1;
+}
+
 int main() {
-    // initialize hardware
     kilo_init();
-    // register message reception callback
     kilo_message_rx = message_rx;
-    // register your program
     kilo_start(setup, loop);
 
     return 0;

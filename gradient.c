@@ -6,18 +6,17 @@ uint8_t new_message = 0;
 message_t msg;
 
 void message_rx(message_t *m, distance_measurement_t *d) {
-    recvd_gradient = msg.data[0]  | (msg.data[1]<<8);
     new_message = 1;
+    // unpack two 8-bit integers into one 16-bit integer
+    recvd_gradient = msg.data[0]  | (msg.data[1]<<8);
 }
 
 message_t *message_tx() {
-    if (!new_message)
-        return &msg;
-    else
-        return '\0';
+    return &msg;
 }
 
 void update_message() {
+    // pack one 16-bit integer into two 8-bit integers
     msg.data[0] = gradient_value&0xFF;
     msg.data[1] = (gradient_value>>8)&0xFF;
     msg.crc = message_crc(&msg);

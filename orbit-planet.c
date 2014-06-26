@@ -1,6 +1,10 @@
 #include <kilolib.h>
 
-// Declare state variable type to control motion.
+// declare constants
+static const uint8_t TOOCLOSE_DISTANCE = 40; // 40 mm
+static const uint8_t DESIRED_DISTANCE = 60; // 60 mm
+
+// declare motion variable type
 typedef enum {
     STOP,
     FORWARD,
@@ -8,9 +12,20 @@ typedef enum {
     RIGHT
 } motion_t;
 
-motion_t cur_motion = STOP;
+// declare state variable type
+typedef enum {
+    ORBIT_TOOCLOSE,
+    ORBIT_NORMAL,
+} orbit_state_t;
 
-// Function to set new motion
+// declare variables
+motion_t cur_motion = STOP;
+orbit_state_t orbit_state = ORBIT_NORMAL;
+uint8_t cur_distance = 0;
+uint8_t new_message = 0;
+distance_measurement_t dist;
+
+// function to set new motion
 void set_motion(motion_t new_motion) {
     if (cur_motion != new_motion) {
         cur_motion = new_motion;
@@ -34,30 +49,6 @@ void set_motion(motion_t new_motion) {
     }
 }
 
-uint8_t new_message = 0;
-distance_measurement_t dist;
-
-void message_rx(message_t *m, distance_measurement_t *d) {
-    new_message = 1;
-    dist = *d;
-}
-
-// declare constants
-static const uint8_t TOOCLOSE_DISTANCE = 40; // 40 mm
-static const uint8_t DESIRED_DISTANCE = 60; // 60 mm
-
-// declare state variables
-typedef enum {
-    ORBIT_TOOCLOSE,
-    ORBIT_NORMAL,
-} orbit_state_t;
-
-orbit_state_t orbit_state = ORBIT_NORMAL;
-uint8_t cur_distance = 0;
-
-// no setup code required
-void setup() { }
-
 void orbit_normal() {
     if (cur_distance < TOOCLOSE_DISTANCE) {
         orbit_state = ORBIT_TOOCLOSE;
@@ -75,6 +66,9 @@ void orbit_tooclose() {
     else
         set_motion(FORWARD);
 }
+
+// no setup code required
+void setup() { }
 
 void loop() {
     // Update distance estimate with every message
@@ -95,12 +89,14 @@ void loop() {
     }
 }
 
+void message_rx(message_t *m, distance_measurement_t *d) {
+    new_message = 1;
+    dist = *d;
+}
+
 int main() {
-    // initialize hardware
     kilo_init();
-    // register message reception callback
     kilo_message_rx = message_rx;
-    // register your program
     kilo_start(setup, loop);
 
     return 0;

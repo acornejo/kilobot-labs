@@ -1,21 +1,24 @@
 #include <kilolib.h>
 
-#define THRESH_HIGH 5
-#define THRESH_LOW 5
+// declare constants
+static const uint8_t THRESH_HIGH = 5;
+static const uint8_t THRESH_LOW  = 5;
 
+// declare variables
 int cur_direction = 0;
 long cur_light = 0;
 long  high_thresh = 0, low_thresh = 1024;
 
 void sample_light() {
-    int i;
-    long average;
+    int numsamples = 0;
+    long average = 0;
 
-    average = 0;
-    for (i = 0 ; i < 300; i++) {
+    while (numsamples < 300) {
         int sample = get_ambientlight();
-        if( sample == -1) { i--; continue;}
-        average += sample;
+        if (sample != -1) {
+            average += sample;
+            numsamples++;
+        }
     }
 
     cur_light = average / 300;
@@ -51,7 +54,6 @@ void compute_direction() {
 
 void setup() {
     switch_directions(); // start turning in any direction
-    delay(1000);
 }
 
 void loop() {

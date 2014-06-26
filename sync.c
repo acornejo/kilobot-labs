@@ -1,6 +1,9 @@
 #include <kilolib.h>
 
+// declare constants
 #define PERIOD 32
+
+// declare variables
 uint8_t modulo_clock;
 message_t msgs[PERIOD];
 uint8_t offsets[PERIOD];
@@ -58,12 +61,9 @@ void loop() {
 
 
 int main() {
-    // initialize hardware
     kilo_init();
-    // register message callbacks
     kilo_message_rx = message_rx;
     kilo_message_tx = message_tx;
-    // register your program
     kilo_start(setup, loop);
 
     return 0;

@@ -1,31 +1,31 @@
 #include <kilolib.h>
 
+// declare variables
 uint8_t message_sent = 0;
-message_t transmit_msg;
-
-// Transmit: Always transmit a message
-message_t *message_tx() {
-    return &transmit_msg;
-}
-
-void message_tx_succes() {
-    message_sent = 1;
-}
+message_t msg;
 
 void setup() {
     // initialize message
-    transmit_msg.type = NORMAL;
-    transmit_msg.crc = message_crc(&transmit_msg);
+    msg.type = NORMAL;
+    msg.crc = message_crc(&msg);
 }
 
 void loop() {
-    // blink led magenta on message sent
+    // blink magenta when is message sent
     if (message_sent) {
         message_sent = 0;
         set_color(RGB(1,0,1));
         delay(100);
         set_color(RGB(0,0,0));
     }
+}
+
+message_t *message_tx() {
+    return &msg;
+}
+
+void message_tx_succes() {
+    message_sent = 1;
 }
 
 int main() {
