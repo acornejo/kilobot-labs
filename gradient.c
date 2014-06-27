@@ -12,7 +12,10 @@ void message_rx(message_t *m, distance_measurement_t *d) {
 }
 
 message_t *message_tx() {
-    return &msg;
+    if (gradient_value != UINT16_MAX)
+        return &msg;
+    else
+        return '\0';
 }
 
 void update_message() {
@@ -30,7 +33,7 @@ void setup() {
 
 void loop() {
     if (new_message) {
-        if (recvd_gradient != UINT16_MAX && gradient_value > recvd_gradient+1) {
+        if (gradient_value > recvd_gradient+1) {
             gradient_value = recvd_gradient+1;
             update_message();
         }
