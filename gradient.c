@@ -30,7 +30,7 @@ void setup() {
 
 void loop() {
     if (new_message) {
-        if (gradient_value > recvd_gradient+1) {
+        if (recvd_gradient != UINT16_MAX && gradient_value > recvd_gradient+1) {
             gradient_value = recvd_gradient+1;
             update_message();
         }
