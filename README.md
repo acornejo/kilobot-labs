@@ -142,13 +142,13 @@ int state_changed = 1;
 
 // in the program loop add code to implement the following
 if state_changed then
-state_changed = 0
+    state_changed = 0
 if state is 0 then
-set LED to green, spinup motors, set motors to move forward
+    set LED to green, spinup motors, set motors to move forward
 if state is 1 then
-set LED to red, spinup motors, set motors to turn left
+    set LED to red, spinup motors, set motors to turn left
 if state is 2 then
-set LED to blue, spinup motors, set motors to turn right
+    set LED to blue, spinup motors, set motors to turn right
 ```
 
 Once you have that working you have the basic block structure
@@ -204,7 +204,7 @@ created), again as shown in the code below.
 // Called when the messaging subsystem decides to broadcast a message
 message_t transmit_msg;
 message_t *message_tx() {
-return &transmit_msg;
+    return &transmit_msg;
 } 
 ```
 
@@ -222,8 +222,8 @@ kilobot check if any of the message got corrupted (to an extent).
 ```
 // Your program init (things that only need to happen once)
 void program_init() {
-transmit_msg.data[0] = 5;   // sending the same message always
-transmit_msg.crc = message_crc(&transmit_msg);
+    transmit_msg.data[0] = 5;   // sending the same message always
+    transmit_msg.crc = message_crc(&transmit_msg);
 }
 ```
 
@@ -254,14 +254,14 @@ below.
 int new_rcvd_message = 0;
 message_t rcvd_message;
 void message_rx(message_t *msg, distance_measurement_t *dist) {
-rcvd_message = *msg;  //store the incoming message
-new_rcvd_message = 1; // set the flag to 1 to indicate that a new message arrived
+    rcvd_message = *msg;  //store the incoming message
+    new_rcvd_message = 1; // set the flag to 1 to indicate that a new message arrived
 }
 ```
 
 Behind the scenes, the kilobot is continually checking for
 messages and when a new mmessage is successfully received, the
-callback function `message-rx()` gets called and the
+callback function `message_rx()` gets called and the
 flag gets set. But we don't need to do anything else for that to
 happen.
 
@@ -371,33 +371,28 @@ if (pickrand < 5) {
 ```
 
 Finally, lets add the motion. But first we will create a new
-subroutine function called `set-motion-direction`. This
+subroutine function called `set_motion`. This
 function will check the current direction of the robot, and only
 spinup and set motors if the robot is changing its direction. Note
 that you must define this function before
-the `program_loop()` code begins.
+the `program_loop()` code begins. One way is to use an integer to encode
+the motion, where `0=stopped`, `1=forward`, `2=left` and `3=right`, here
+is some pseudo-code.
 
 ```
-// Motion: Putting the movement in a function to make the code cleaner and more efficient
-// Now, we only set the motors if the robot is changing what motion it was doing
-// 0 = stopped 1 = forward 2 = clockwise 3 = counterclockwise
+int cur_motion = 0;
 
-int current_direction = 0;
-
-void set_motion_direction(int newdirection) {
-if (current_direction is not equal to the newdirection) { 
-
-if (newdirection == 0) { 
-set motors to stop
-} else if (newdirection == 1) {
-set motors to move forward
-} else if (newdirection == 2) {
-set motors to turn clockwise
-} else {
-set motors to turn counterclockwise
-}
-current_direction = newdirection;   // remember the new direction
-}
+void set_motion(int new_motion) {
+    if cur_motion is not equal to the new_motion then
+        if new_motion is 0 then
+            stop
+        else if new_motion is 1 then
+            move forward
+        else if newmotion is 2 then
+            turn clockwise
+        else 
+            turn counterclockwise
+        cur_motion = new_motion;
 }
 ```
 
