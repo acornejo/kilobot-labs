@@ -18,6 +18,9 @@ robot populations.
 
 ## Getting Started
 
+The following labs assume that you have at least one overhead controller
+and two kilobots with the latest firmware, and a computer with the
+KiloGUI tool.
 Add reminder to follow the documentation for setting up the GUI
 and editor. Maybe also add helpful hints, like where in dropbox
 the files are stored and a reminder on how to use KiloGUI to
@@ -273,8 +276,8 @@ like blink the LED magenta just so you know the kilobot is running
 the speaker code. You can compile and upload, but the real test
 will be once we have created the listener robot.
 
-*Note for lecturer: May need to explain the difference
-between `*msg`, `&amp;msg` and  `msg` to non-C users. Also explain why the
+* *Note for lecturer: May need to explain the difference
+between `&#42;msg`, `&amp;msg` and  `msg` to non-C users. Also explain why the
 transmit message value and crc should not be set within the
 callback but within the program init or loop.*
 
@@ -286,7 +289,8 @@ to store any new incoming messages and a boolean
 variable (often called a "flag")
 called `new_message` to indicate that a new message has been received.
 
-Create a new file called `test-listener.c` and add the following code.
+Create a new file called `test-listener.c` and add the following code
+after the include section.
 
 ```
 int new_message = 0;
@@ -298,8 +302,23 @@ void message_rx(message_t *msg, distance_measurement_t *dist) {
 }
 ```
 
-As before, you must now register the message reception function with the
-kilobot library as follows:
+Now in the program loop, we will check the flag to see if a new
+message has arrived. If a new message has arrived, we will blink
+the LED yellow.
+
+```
+void loop() {
+    // Blink led yellow when you get a message
+    if (new_message) {
+        new_message = 0;
+        set_color(RGB(1,1,0));
+        delay(10);
+        set_color(RGB(0,0,0));
+    }
+}
+
+Finally, as before, you must modify your main section to register the message
+reception function with the kilobot library as follows:
 
 ```
 int main() {
@@ -316,62 +335,80 @@ decoded the function `message_rx()` will get called with the message and
 the distance measurements as a parameter (for now, ignore the distance
 measurements, which will be explained in a later lab).
 
-Now in the program loop, we will check the flag to see if a new
-message has arrived. If a new message has arrived, we will blink
-the LED yellow.
+```
+
+### 2.3 test-speaker-mod.c
+
+Once you've tested the speaker and listener together, we will modify the
+speaker code to send two different messages. Specifically we will use a
+timer to change the message being sent once every two seconds.
+The code for switching should look similar to the way you made a state
+machine in 1.3. 
+
+First, we start by declaring an array with two messages (instead of a
+single message), and we use a flag to decide which message to send.
 
 ```
-void loop() {
-    // Blink led yellow when you get a message
-    if (new_message) {
-        new_message = 0;
-        set_color(RGB(1,1,0));
-        delay(10);
-        set_color(RGB(0,0,0));
+uint8_t msg_idx = 0;
+message_t transmit_msg[2];
+
+message_t *message_tx() {
+    return &transmit_msg[msg_idx];
+} 
+```
+
+Next use the `setup()` function to the set the initial contents of the
+messages in the array.
+
+```
+void setup() {
+    for (int i = 0; i<2; i++) {
+        transmit_msg[i].type = NORMAL;
+        transmit_msg[i].data[0] = i;
+        transmit_msg[i].crc = message_crc(&transmit_msg[i]);
     }
 }
 ```
 
-### 2.3 Modify test-speaker.c
+Finally, we modify the main loop to includes code that every two seconds
+switches the message being sent.
 
-Once you've tested the speaker and listener together, we will modify the
-speaker code to send different messages. Specifically we will use a
-timer to change the message every second.
-The code for switching should look similar to the way you made a state
-machine in 1.3. 
+```
+    // switch message sent every 2 seconds (64 ticks)
+    if (kilo_ticks > last_changed + 64) {
+        last_changed = kilo_ticks;
+        msg_idx = (msg_idx + 1)%2;
+    }
+```
 
 ### 2.3 Modify test-listener.c
 
-Now modify the listener code from before to read the value of
-the message by reading the first byte of the recieved message
-(`rcvd_message[0]`). If the value is odd, then blink
-the LED blue. If the value is even, then blink the LED red.
+Now modify the listener code from before to read the value of the
+message by reading the value of the first byte of the recieved message.
+If the value is odd, then blink the LED blue. If the value is even, then
+blink the LED red.
 
 Further modify the code to check the distance from its
 neighbor. ADD DETAILS. 
 
-Now is a good time to test your code. Compile, upload, and run
-your listener robot. Then do the same for your speaker. Your
-speaker robot should be blinking magenta pretty rapidly, and when
-your listener is within a short distance, it should be blinking
-blue or red as messages arrive. MOving further away should cause
-the robot to blink magenta or cyan. Moving further away still
-should cause the listener to stop blinking when it no longer
-here's the messaages. 
+Now is a good time to test your code. Compile, upload, and run your
+listener robot. Then do the same for your speaker. When the robots are
+close together the listener should be blinking blue or red as messages
+arrive. Moving the robots further away should cause the listener robot
+to blink magenta or cyan. Moving the robots even further away should
+cause the listener to stop blinking once it is outside the communication
+range.
 
 ### 2.4 Explanation
 
-*   **Objective: ** Discuss the whole message
-structure and callbacks, even though we haven't used the whole
-power of the system yet
+*   **Objective: ** Understand the message structure and callbacks
+system, even though we haven't used the whole power of the system yet
 
-<p>We have only used a small part of the message structure. Read
-the API to further understand how messages can be sent. Things to
+We have only used a small part of the message structure. Read
+the API to further understand the message structure. Things to
 look at include: how to send larger messages, and how to send a
 single message from one robot to another instead of the constant
 broadcast we used here.
-
-<!-- ********* LAB3 ********* -->
 
 ## LAB3: PUTTING IT TOGETHER
 
@@ -381,39 +418,33 @@ We will now create a single robot with the following behavior:
 The robot will always broadcast its own ID and always be listening
 for messages from other robots. If the robot does not hear any
 neighboring robots, then it will turn off its motors and stand
-still. However if it hears another robot nearby, then it should
-move, but it should choose how to move with some randomness.
+still. However if it hears another robot nearby, it will move randomly.
 
-Create a new file
-called `transmit-receive-randmotion.c`. Using your
-previous code from lab 2 as examples, modify the message callbacks
-so that the robot is transmitting a single message (set
-in `program_init` to be the robot ID) and when it
-recives a message, it turns the LED yellow for 10ms. Feel free to
-test this code quickly with your two robots. Both should blink
-when they see each other.
+Create a new file called `transmit-receive-randmotion.c`. Using your
+previous code from lab 2 as examples, modify the message callbacks so
+that the robot is transmitting a single message (set in `setup` to be
+the robot ID) and when it recives a message, it turns the LED
+yellow for 10ms. Feel free to test this code quickly with your two
+robots. Both should blink when they see each other.
 
 As the next step, modify the code above so that the robot
 chooses randomly between three different colors to flash when it
 gets a message. The code below show how to use the
-function `rand()` to pick a number between 0 and
-9. Note that we are favoring the color red by picking it with
-higher probability than the other two colors. Make sure that the
-code still works as before; the LED should be off if the robot
-does not hear any neighbors.
+function `soft_rand()` to pick red with 50% probability, green with 25%
+probability, and blue with 25% probability. To do this, we first select
+2 bits of the 8-bit random number, and then make the decision based on
+the four possible values these 2-bits can take (each of these values is
+taken with equal probability, that is 25% probability).
 
 ```
-int pickrand = 0;
+const uint8_t twobit_mask = 0b00000011;
+uint8_t twobit_rand = rand_soft()&twobit_mask;
 
-//In Your Program loop
-
-pickrand = rand() % 10;    // pick random number in the range 0 to 9
-
-if (pickrand < 5) {  
+if (twobit_rand == 0 || twobit_rand == 1) {  
     set LED to red
-} else if (pickrand < 7) {
+} else if (twobit_rand == 2) {
     set LED to green
-} else {
+} else if (twobit_rand == 3){
     set LED to green
 }
 ```
@@ -423,7 +454,7 @@ subroutine function called `set_motion`. This
 function will check the current direction of the robot, and only
 spinup and set motors if the robot is changing its direction. Note
 that you must define this function before
-the `program_loop()` code begins. One way is to use an integer to encode
+the `loop()` code begins. One way is to use an integer to encode
 the motion, where `0=stopped`, `1=forward`, `2=left` and `3=right`, here
 is some pseudo-code.
 
@@ -447,6 +478,19 @@ void set_motion(int new_motion) {
 Now in the program loop, modify the code so that in addition to
 turning on the LEDs, the robot also sets a direction based on the
 random number (red straight, green left, blue right).
+
+## LAB4: ORBIT
+
+* **Objective**: Use distance sensing to have one robot orbit another
+stationary robot while keeping a fixed distance.
+
+# 4.1 orbit-star.c
+
+The orbit-star program is identical to the `test-speaker.c` program you
+created in LAB2. Its purpose is to serve as a stationary reference that
+constantly emits beacon messages to the oribiting robot.
+
+# 4.2 orbit-planet.c
 
 ## LAB 4 and Beyond
 
