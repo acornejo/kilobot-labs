@@ -3,12 +3,11 @@
 These labs are part of a workshop funded by NSF to make
 programming the kilobots accessible to students and scientists
 from different disciplines. They are a great way to get started
-using the Kilobotics system or to teach the system to others. The
-labs are meant to be done by teams of two people (pair
-programming) using one laptop, a controller, a small whiteboard,
+using the kilobots; the labs are meant to be done by teams of two people
+(pair programming) using one laptop, a controller, a small whiteboard,
 and two kilobots. The labs cover the main functionalities of the
-Kilobot, and end with some fun demos that can be run on larger
-robot groups.
+kilobot, and end with some fun demos that can be run on with large
+robot populations.
 
 * [Getting Started](#getting-started)
 * [Lab0: Blinky](#lab0-blinky)
@@ -27,20 +26,33 @@ upload a file?
 ## LAB0: BLINKY
 
 * **Program:** Blink LEDS Red then Blue for 500ms each
-* **Objective:** Introduce basic code structure (i.e. `setup` and `loop`) and basic functions such as `set_color` and `delay`
+* **Objective:** Introduce basic code structure (i.e. `setup` and
+        `loop`) and basic functions such as `set_color` and `delay`
 
 In the Kilobotics Editor, create a new file and name it `blinkleds.c`.
-You'll see several things in the file, like `#include kilobot.h` which
-contains the definitions of the kilobot library (API). The documentation
-of the kilobot library is available [here](#). 
+You'll see several things in the file, like `#include <kilobot.h>` which
+contains the definitions of the [Kilobot library
+API](https://www.kilobotics.com/docs/index.html).
 
-Behind the scenes, the Kilobotics Editor will compile your code using [avr-gcc](https://gcc.gnu.org/wiki/avr-gcc) and will link it against [avr-libc](http://www.nongnu.org/avr-libc/). Some of the low level functions, including math functions, are part of the [avr-libc](http://www.nongnu.org/avr-libc/) library, whose documentation is available [here](http://www.nongnu.org/avr-libc/user-manual/modules.html). If you choose to do so, you can install avr-gcc and avr-libc on your computer and develop locally instead of relying on the Kilobotics Editor. However, for the purposes of this workshop, we will simply assume you are using the Kilobotics Editor.
+Behind the scenes, the [Kilobotics
+Editor](https://www.kilobotics.com/editor) will compile your code using
+[avr-gcc](https://gcc.gnu.org/wiki/avr-gcc) and will link it against
+[avr-libc](http://www.nongnu.org/avr-libc/) and
+[kilolib](http://github.com/acornejo/kilolib). Some of the low level
+functions, including math functions, are part of the
+[avr-libc](http://www.nongnu.org/avr-libc/) library, whose documentation
+is available
+[here](http://www.nongnu.org/avr-libc/user-manual/modules.html). If you
+choose to do so, you can install avr-gcc, avr-libc and kilolib on your
+computer and develop locally instead of relying on the Kilobotics
+Editor. However, for the purposes of this workshop, we will simply
+assume you are using the Kilobotics Editor.
 
-The main place to add code is
-in `loop`. These function will be run repeatedly until you either reset or pause the robot. 
-We will modify `loop` to blink the robot
-LED. Take a look at the API page to see how to use the functions
-`set_color` and `delay`. Write the code
+The main place to add code is in `loop`. These function will be run
+repeatedly until you either reset or pause the robot. We will modify
+`loop` to blink the robot LED. Take a look at the 
+[Kilobot library API](https://www.kilobotics.com/docs/index.html) page
+to see how to use the functions `set_color` and `delay`. Write the code
 for the following:
 
 ```
@@ -50,13 +62,15 @@ set LED color to BLUE
 delay 500ms
 ```
 
-<p>Compile your code. This will produce a file called
+Compile your code. This will produce a file called
 `blinkleds.hex`. Now use the KiloGUI to upload the hex
 file to your to your kilobot and see what happens (for detailed
 info on how to use the KiloGUI, see here (link)). If you run into
 problems, take a look at the solution code above.
 
-_ Questions: (1) What is the maximum delay rounded up to seconds, that you can cause with a single call to delay? (2) How would you set the LED to the color cyan? _
+* *Questions: (1) What is the maximum delay rounded up to seconds, that
+you can cause with a single call to delay? (2) How would you set the LED
+to the color cyan?*
 
 ## LAB1: MOVEMENT
 
@@ -64,32 +78,48 @@ _ Questions: (1) What is the maximum delay rounded up to seconds, that you can c
 
 * **Objective:** Manually calibrate the kilobots using the KiloGUI
 
-The Kilobots use vibration motors to move, this is known as stick-slip locomotion. Due to manufacturing differences the power required to achieve good forward and turning motion varies from robot to robot, and generally varies from surface to surface. In this lab you will learn how to manually calibrate the values required for turning left, turning right, and going straight. In the process you can also assign a unique identifier to your kilobot, if you so desire. Follow the steps below
+The Kilobots use vibration motors to move, this is known as stick-slip
+locomotion. Due to manufacturing differences the power required to
+achieve good forward and turning motion varies from robot to robot, and
+generally varies from surface to surface. In this lab you will learn how
+to manually calibrate the values required for turning left, turning
+right, and going straight. In the process you can also assign a unique
+identifier to your kilobot, if you so desire. Follow the steps below
 
-1.  Open up the KiloGUI program and click on the Calibration button, you will be presented with the following screen.
-![](img/calibwindow.png)
-2.  Select a value for turning left, click test to tell the robot to move using this value. Values between 60 and 75 work best for turning, but this will depend on your robot on the surface being used. Choose different values until your robot can perform a full turn consistently on the surface being used.
+1.  Open up the KiloGUI program and click on the Calibration button, you
+    will be presented with the following screen. ![](img/calibwindow.png)
+2.  Select a value for turning left, click test to tell the robot to
+    move using this value. Values between 60 and 75 work best for
+    turning, but this will depend on your robot on the surface being
+    used. Choose different values until your robot can perform a full
+    turn consistently on the surface being used.
 3.  Follow the same procedure for turn right.
-4.  To calibrate to go straight, you can use the values you already found for turn left and turn right as a good initial guess. Usually go straight values should be between 2 and 10 units smaller than the turning left and turning right values to achieve a good motion.
-5.  Once you have calibrated all the values, make sure to click save to write these changes to the EEPROM memory of your robot. Before saving you can choose to set a unique ID for your robot by typing an integer in the unique ID box, and clicking test before you save the calibration data.
+4.  To calibrate to go straight, you can use the values you already
+    found for turn left and turn right as a good initial guess. Usually
+    go straight values should be between 2 and 10 units smaller than the
+    turning left and turning right values to achieve a good motion.
+5.  Once you have calibrated all the values, make sure to click save to
+    write these changes to the EEPROM memory of your robot. Before
+    saving you can choose to set a unique ID for your robot by typing an
+    integer in the unique ID box, and clicking test before you save the
+    calibration data.
 
 ### 1.2 Simple-movement.c
 
 * **Program:** Move forward 2 sec, clockwise 1 sec, anticlockwise 1 sec (repeat)
 * **Objective:** Introduce `set_motors` and calibration constants `kilo_turn_left, kilo_turn_right, kilo_straight_left, kilo_straight_right`
 
-In this lab we will make the Kilobot go through its motions -
-forward, turn left, turn right - in a loop. To do this we will use
-the function `set_motors` that takes values for each of
-the two motors, and we will use the calibrated constants that we
-set in Lab 1.1. Read the API page (link) to see how to use
-`set_motors`. There's one important caveat. When the motors are first
-turned on, we must set the motors to the maximum speed for 15 ms or so,
-in order for the kilobot to overcome static friction. We call
-this spinning up the motors. Therefore, for the robot to move it
-must first spin up the motors and then set its desired motion.
-Motors need to be spinup every time the robot changes its
-direction of motion.
+In this lab we will make the Kilobot go through its motions --forward,
+turn left, turn right-- in a loop. To do this we will use the
+function `set_motors` that takes values for each of the two motors,
+and we will use the calibrated constants that we set in Lab 1.1. Read
+the API page (link) to see how to use `set_motors`. There's one
+important caveat. When the motors are first turned on, we must set
+the motors to the maximum speed for 15 ms or so, in order for the
+kilobot to overcome static friction. We call this spinning up the
+motors. Therefore, for the robot to move it must first spin up the
+motors and then set its desired motion. Motors need to be spinup
+every time the robot changes its direction of motion.
 
 Create a file called `simple-movement.c`. Here's the
 pseudocode you need to write. Then compile, upload and run your code!
@@ -105,21 +135,22 @@ delay 2000ms
 
 ###  1.3 Nonblocked-movement.c 
 
-*  **Program:** Create a state machine with states `forward, turnleft` and `turnright`, switching states every second.
+*  **Program:** Create a state machine with states `forward, turnleft`
+and `turnright`, switching states every second.
 
-In the last two code examples, we used delay to control how
-long to wait. But that prevents the robot from doing anything else
-during that time - we call that "blocking" code. We will now
-rewrite the same code in a "non-blocking" manner by using timers
-to control when to switch from moving forward to turning. 
+In the last two code examples, we used delay to control how long to
+wait. But that prevents the robot from doing anything else during that
+time - we call that "blocking" code. We will now rewrite the same code
+in a "non-blocking" manner by using timers to control when to switch
+from moving forward to turning. 
 
-We will use the robot's own clock to check time, by reading the
-variable `kilo_ticks`. One kilotick is equivalent to
-roughly 30 ms, or equivalently there are approximatly 32 clock ticks every second.
-Clock values must be stored in a non-negative 32-bit integer to avoid having overflows.
-We'll start by writing some simple code that just blinks
-the LED every 64 clock ticks (roughly every 2 seconds). Create a file
-called `nonblocking-movement.c` with the following in proper code.
+We will use the robot's own clock to check time, by reading the variable
+`kilo_ticks`. One tick is equivalent to roughly 30 ms, or
+equivalently there are approximatly 32 clock ticks every second. Clock
+values must be stored in a non-negative 32-bit integer to avoid having
+overflows. We'll start by writing some simple code that just blinks the
+LED every 64 clock ticks (roughly every 2 seconds). Create a file called
+`nonblocking-movement.c` with the following in proper code.
 
 ```
 // before program loop declare the variables 
@@ -127,13 +158,14 @@ uint32_t last_changed;
 
 // In program loop
 if kilo_ticks > (last_changed + 64) then
-last_changed = kilo_ticks // remember the current time
-blink the LED (turn led yellow, delay 100ms, turn off)
+    last_changed = kilo_ticks // remember the current time
+    blink the LED (turn led yellow, delay 100ms, turn off)
 ```
 
-Now that we have that working and tested, we will create a
-state machine with three states,  Each time the timer expires,
-instead of blinking a led, we will update the state and turn on a flag to signal that the state has changed and the motion must be updated.
+Now that we have that working and tested, we will create a state machine
+with three states,  Each time the timer expires, instead of blinking a
+led, we will update the state and turn on a flag to signal that the
+state has changed and the motion must be updated.
 
 ```
 // before program loop declare another two more variables
@@ -163,9 +195,9 @@ Before moving on to the next lab, make sure to take a look at
 the sample code provided to see how we implemented this
 timer-driven state machine.
 
-* Questions: (1) When a kilobot is turned on its clock `kilo_ticks` is set
-to zero. For how many years could you a kilobot have to remain on before
-its clock overflows?*
+* *Questions: (1) When a kilobot is turned on its clock `kilo_ticks` is
+set to zero, and this clock is incremented 32 times per second. How
+long would a kilobot have to remain on for its clock to overflow?*
 
 ## LAB2: COMMUNICATION
 
@@ -176,54 +208,62 @@ the **listener**. Eventually we will program robots
 that do both, but the speaker/listener code here is also useful
 for debugging for more complex programs.
 
-### 2.1 Test-speaker.c
+### 2.1 test-speaker.c
 
-* **Program:** Broadcast the number 5 continually; blink LED magenta
+* **Program:** Broadcast a message continuously.
 
 A kilobot uses infrared (IR) to broadcast a message within an
-approximately circular radius of three body lengths. However
-multiple robots will have overlapping regions, causing the IR
-signals to interfere. The kilobots use a common scheme called CDMA
-(collision detection multiple access) to avoid having their
-messages too often. Suffice it to say, if you tell a robot to send
-a message, it may take some time before the robot can speak it,
-and the message may not be properly heard ewith some probability.
+approximately circular radius of three body lengths. Multiple robots
+packed closely together will have overlapping transmission regions,
+causing the IR signals to interfere.
 
-Here will will set a single message, and ask that the robot
-broadcast it as often as possible. Without any other robots within
-shouting distance, a kilobot achieves roughly X messages/sec. To do
-this, we will first declare a variable
-called `transmit_msg` of the structure type
-`message_t`. You should do this near the top of the
-file, before the function `message_tx()`, as shown in
-the code below. Next, modify the function `message_tx()`
-to return `&transmit_msg` (the address of message you
-created), again as shown in the code below.
+The kilobots use a variant of the CSMA/CD media access control method
+(carrier-sensing multiple access with collision detection) to ameliorate
+the problems with interference.
+Suffice it to say, if you instruct a robot to send a message, it may
+take some time before the robot can actually broadcast the message.
+Moreover, with even after the message is broadcast, it is possible that
+this message cannot be decoded by the receiver robot due to noise.
+
+In this lab we will instruct each robot to send a message, and the robot
+will broadcast it as often as possible (depending on the congestion of
+the channel).
+Without any other robots within shouting distance, a kilobot achieves
+roughly 3 messages/sec. To do this, we will first declare a variable
+called `transmit_msg` of the structure type `message_t`. You should do
+this near the top of the file. Next, we add the function `message_tx()`
+that returns the address of the message we declared (`return &transmit_msg`).
 
 ```
-// Called when the messaging subsystem decides to broadcast a message
 message_t transmit_msg;
+
 message_t *message_tx() {
     return &transmit_msg;
 } 
 ```
 
-Next, you should read about the message structure on the API
-page (link). We will set the message being transmitted to be a
-fixed value, so we only need to do this once. To do that we will
-insert some code into the `program-init()` function; in
-general you can put anything here that you want to run once before
-the program loop starts. A message is X bytes and stored as an
-array. The code below shows how to set the first byte of the array
-to the number 5. Next the code calls the function message_crc()
-which computes a error-correction code that helps a recieving
-kilobot check if any of the message got corrupted (to an extent).
+We use the `setup()` function to the set the initial contents of the
+message and compute the message CRC value (used for error detection)
+through the function `message_crc()`.
+The code below shows how to initialize an empty message.
 
 ```
-// Your program init (things that only need to happen once)
-void program_init() {
-    transmit_msg.data[0] = 5;   // sending the same message always
+void setup() {
+    transmit_msg.type = NORMAL;
     transmit_msg.crc = message_crc(&transmit_msg);
+}
+```
+
+Finally, you must register your message transition function with the
+kilobot library as follows:
+
+```
+int main() {
+    kilo_init();
+    kilo_message_tx = message_tx;
+    kilo_start(setup, loop);
+
+    return 0;
 }
 ```
 
@@ -238,43 +278,53 @@ between `*msg`, `&amp;msg` and  `msg` to non-C users. Also explain why the
 transmit message value and crc should not be set within the
 callback but within the program init or loop.*
 
-### 2.2. Test-listener.c
+### 2.2. test-listener.c
 
-Now we will create the listener robot. To do this, we will
-modify the callback `message_rx()`. We will declare a
+Now we will create the listener robot. We first declare a
 variable `rcvd_message` of type `message_t`
-to store any new incoming messages. We will also use a boolean
+to store any new incoming messages and a boolean
 variable (often called a "flag")
-called `new_rcvd_message` to indicate when a new
-message as arrived and when it has been read. Create a new file
-called `test-listener.c` Modify the code as shown
-below.
+called `new_message` to indicate that a new message has been received.
+
+Create a new file called `test-listener.c` and add the following code.
 
 ```
-int new_rcvd_message = 0;
+int new_message = 0;
 message_t rcvd_message;
+
 void message_rx(message_t *msg, distance_measurement_t *dist) {
     rcvd_message = *msg;  //store the incoming message
-    new_rcvd_message = 1; // set the flag to 1 to indicate that a new message arrived
+    new_message = 1;      // set the flag to 1 to indicate that a new message arrived
 }
 ```
 
-Behind the scenes, the kilobot is continually checking for
-messages and when a new mmessage is successfully received, the
-callback function `message_rx()` gets called and the
-flag gets set. But we don't need to do anything else for that to
-happen.
+As before, you must now register the message reception function with the
+kilobot library as follows:
+
+```
+int main() {
+    kilo_init();
+    kilo_message_rx = message_rx;
+    kilo_start(setup, loop);
+
+    return 0;
+}
+```
+
+The kilobot API guarantees that each time a message is successfully
+decoded the function `message_rx()` will get called with the message and
+the distance measurements as a parameter (for now, ignore the distance
+measurements, which will be explained in a later lab).
 
 Now in the program loop, we will check the flag to see if a new
 message has arrived. If a new message has arrived, we will blink
 the LED yellow.
 
 ```
-// Your program loop
 void loop() {
     // Blink led yellow when you get a message
-    if (new_rcvd_message) {
-        new_rcvd_message = 0;
+    if (new_message) {
+        new_message = 0;
         set_color(RGB(1,1,0));
         delay(10);
         set_color(RGB(0,0,0));
@@ -284,13 +334,11 @@ void loop() {
 
 ### 2.3 Modify test-speaker.c
 
-Once you've tested the speaker and listener together, we will
-modify the speaker code to switch its message. To do so, use a
-timer in the program loop to change the message from the number
-"5" to the number "6" every second (64 ticks) so that to that the
-robot switches the message being sent. The code for switching
-should look similar to the way you made a state machine in
-1.3. Also remember that you need to use 
+Once you've tested the speaker and listener together, we will modify the
+speaker code to send different messages. Specifically we will use a
+timer to change the message every second.
+The code for switching should look similar to the way you made a state
+machine in 1.3. 
 
 ### 2.3 Modify test-listener.c
 
