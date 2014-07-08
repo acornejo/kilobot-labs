@@ -22,18 +22,11 @@ AVROC = avr-objcopy
 AVROD = avr-objdump
 AVRUP = avrdude
 
-PFLAGS = -P /dev/ttyACM0 -c avrisp2
-PFLAGS2 = -P usb -c avrispmkII
 CFLAGS = -mmcu=atmega328p -Wall -gdwarf-2 -O3 -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -Ikilolib
 CFLAGS += -DF_CPU=8000000
 
 FLASH = -R .eeprom -R .fuse -R .lock -R .signature
 EEPROM = -j .eeprom --set-section-flags=.eeprom="alloc,load" --change-section-lma .eeprom=0  
-
-define MERGE 
-	@cat $(1) | grep -v ":00000001FF" > $(3)
-	@cat $(2) >> $(3)
-endef
 
 KILOLIB = kilolib/build/kilolib.a
 
