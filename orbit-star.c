@@ -1,18 +1,19 @@
 #include <kilolib.h>
 
 // declare variables
+uint8_t message_sent = 0;
 message_t msg;
-uint8_t sent_message = 0;
 
 void setup() {
-    // initialize empty beacon message
+    // initialize message
     msg.type = NORMAL;
     msg.crc = message_crc(&msg);
 }
 
 void loop() {
-    if (sent_message) {
-        sent_message = 0;
+    // blink red when message is sent
+    if (message_sent) {
+        message_sent = 0;
         set_color(RGB(1,0,0));
         delay(20);
         set_color(RGB(0,0,0));
@@ -24,7 +25,7 @@ message_t *message_tx() {
 } 
 
 void message_tx_success() {
-    sent_message = 1;
+    message_sent = 1;
 }
 
 int main() {
