@@ -23,7 +23,7 @@ void message_rx(message_t *msg, distance_measurement_t *d) {
             offsets[modulo_clock-msg->data[0]]++;
     } else {
         if (msg->data[0] - modulo_clock > PERIOD/2)
-            offsets[modulo_clock + (32-msg->data[0])]++;
+            offsets[modulo_clock + (PERIOD-msg->data[0])]++;
     }
 }
 
@@ -43,7 +43,7 @@ void loop() {
         set_color(RGB(0,1,0));
         delay(100);
         set_color(RGB(0,0,0));
-        // compute averge offset
+        // compute average offset
         total = 0;
         average = 0;
         for (int i = 0; i < PERIOD; i++) {

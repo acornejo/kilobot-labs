@@ -276,10 +276,10 @@ like blink the LED magenta just so you know the kilobot is running
 the speaker code. You can compile and upload, but the real test
 will be once we have created the listener robot.
 
-* *Note for lecturer: May need to explain the difference
-between `&#42;msg`, `&amp;msg` and  `msg` to non-C users. Also explain why the
-transmit message value and crc should not be set within the
-callback but within the program init or loop.*
+* *Note: Lecturer may need to explain the difference in the C language
+between `&#42;msg`, `&amp;msg` and  `msg`. Also explain why the
+message value and crc should not be set within the
+callback but within the main program loop or setup phase.*
 
 ### 2.2. test-listener.c
 
@@ -440,13 +440,12 @@ taken with equal probability, that is 25% probability).
 const uint8_t twobit_mask = 0b00000011;
 uint8_t twobit_rand = rand_soft()&twobit_mask;
 
-if (twobit_rand == 0 || twobit_rand == 1) {  
+if twobit_rand == 0 || twobit_rand == 1 then
     set LED to red
-} else if (twobit_rand == 2) {
+else if twobit_rand == 2 then
     set LED to green
-} else if (twobit_rand == 3){
+else if twobit_rand == 3 then
     set LED to green
-}
 ```
 
 Finally, lets add the motion. But first we will create a new
@@ -467,7 +466,7 @@ void set_motion(int new_motion) {
             stop
         else if new_motion is 1 then
             move forward
-        else if newmotion is 2 then
+        else if new_motion is 2 then
             turn clockwise
         else 
             turn counterclockwise
@@ -492,17 +491,166 @@ constantly emits beacon messages to the oribiting robot.
 
 # 4.2 orbit-planet.c
 
-## LAB 4 and Beyond
+Create a new file `orbit-planet.c` and use a starting point the contents
+of the `transmit-receive-randmotion.c` file.
 
-Lab 4: Orbit (two programs orbit-star.c and orbit-planet.c) more complex movement
+For the first time, in this lab we will use the data available in the
+`distance_measurement_t` structure to estimate the distance between two
+robots via the `estimate_distance()` function of the kilolib API.
+Namely, whenever a new message is received, we will turn on a flag
+`new_message` and store the distance measurement. This distance
+measurement is translated to a distance measurement in the main program
+loop. The pseudo-code for this is as follows:
 
-Lab 5: Sync (two programs test-oscillator.c and sync.c), more complex communication and timing
+```
+distance_measurement_t dist;
+uint8_t cur_distance = 0;
+uint8_t new_message = 0;
 
-Lab 6: Move-to-light (introduce light sensing), light plus interesting movement
+void message_rx(message_t *m, distance_measurement_t *d) {
+    new_message = 1;
+    dist = *d;
+}
+
+// ... somewhere inside the main program loop
+    if (new_message) {
+        new_message = 0;
+        cur_distance = estimate_distance(&dist);
+    }
+```
+
+The variable `cur_distance` contains the distance estimate to the robot
+that originated the last message, measured in millimiters.
+
+Our goal is for the planet robot to orbit at a fixed distance from the
+star robot; specifically we will use an orbiting distance of 6cm, since
+this is a good compromise between the communication range (10cm) and the
+minimum robot distance (3.3cm).
+
+If the current distance estimate to the robot is 2cm smaller (or more)
+than the desired oribitng distance, then the robot moves forward
+until the distance estimate becomes greater than the desired
+orbiting distance (6cm). Otherwise, the robot will simply alternate
+between turning left when the current distance is less than the desired
+oribiting distance, and turning right when the current distance is
+greater than the desrired oribiting distance.
+
+We reuse the function `set_motion` of the
+`transmit-receive-randmotion.c` file in the following pseudocode.
+
+```
+// ... somewhere inside the main program loop
+
+if cur_distance <= 40 then
+    too_close = 1
+
+if too_close then
+    if cur_distance > 60 then
+        too_close = 0
+    else
+        set_motion(FORWARD)
+else
+    if cur_distance <= 60 then
+        set_motion(LEFT)
+    else
+        set_motion(RIGHT)
+```
+
+## LAB 5: Sync
+
+* **Objective**: Create a logical synchronus clock between different
+robots to allow two or more robots to blink an LED in unison roughly
+every 4 seconds.
+
+We will use the internal clock `kilo_ticks` available at each kilobot to
+create a logical clock `modulo_clock`, which will be updated based on
+the logical clock of neighboring robots. Specifically our `modulo_clock`
+will be a 5-bit clock and only take values from 0 to 31 (i.e. 2^5=32
+different values). Each robot will blink their LED and update their
+clock `modulo_clock` is equal to zero. Since `kilo_ticks` is incremented
+roughly 32 times per second, and we want robots to blink roughly once
+every four seconds, then we will let `modulo_clock=(kilo_ticks/4)%32`.
+
+Along with every message, each robot will send the current value of its
+`modulo_clock`, since the clock can only take 32 possible values, then
+there are only 32 possible messages, these messages can be precomputed
+in the `setup` phase as follows (where the first byte of the message
+contains the value of `modulo_clock`)
+
+```
+message_t msgs[32];
+
+void setup() {
+    for (int i = 0; i < 32; i++) {
+        msgs[i].data[0] = i;
+        msgs[i].type = NORMAL;
+        msgs[i].crc = message_crc(&msgs[i]);
+        offsets[i] = 0;
+    }
+}
+```
+
+The message transmission callback simply returns the message indexed by
+the current value of `modulo_clock` as follows:
+
+```
+message_t *message_tx() {
+    return &msgs[modulo_clock];
+}
+```
+
+The message reception callback will store the received clock values to
+create a histogram of the differences between the value of the clock at
+the sender and the receiver. Moreover, a robot will only store the
+offset of a neighbor if the difference between the sender clock and
+receiver clock is less than half the period (16). This technique ensures
+that given two robots $A$ and $B$, either $A$ will adjust towards $B$ or
+$B$ will adjust towards $A$, but not both. This helps reduce the
+oscillations of the logical clocks.
+
+The pseudo-code to create the histogram of clock offsets follows (clock
+offsets must be initialized to zero in the setup phase):
+
+```
+uint8_t offsets[32];
+
+void message_rx(message_t *msg, distance_measurement_t *d) {
+    if (modulo_clock > msg->data[0]) {
+        if (modulo_clock - msg->data[0] < 16)
+            offsets[modulo_clock-msg->data[0]]++;
+    } else {
+        if (msg->data[0] - modulo_clock > 16)
+            offsets[modulo_clock + (32-msg->data[0])]++;
+    }
+}
+```
+
+Finally, in the main program loop a robot will blink their LED when
+`modulo_clock` is equal to zero, and at the same time update their clock
+using the average offset.
+
+
+```
+// ... in the main program loop
+    modulo_clock = ((kilo_ticks-tick_offset)/4)%32
+    if !modulo_clock is 0 then
+        blink LED
+
+        // compute offset average
+        total = 0
+        sum = 0
+        for i in [0...32] do
+            total += offsets[i]
+            sum += i*offsets[i]
+            offsets[i] = 0
+
+        // adjust clock by average offset
+        if total > 0 then
+            tick_offset += sum/total
+```
+
+## LAB 6: MOVE TO LIGHT
+
+## LAB 7: GRADIENT
 
 Lab 7: Gradient formation, using the message value
-
-For Labs 6, 7, 8 we can actually bring the whole class
-together. Especially for Lab 8 visualizing the who;e gradient by
-havign a single seed robot and all the rest just flashing their hop
-count color (mod something).
