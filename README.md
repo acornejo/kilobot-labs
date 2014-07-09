@@ -649,8 +649,112 @@ using the average offset.
             tick_offset += sum/total
 ```
 
-## LAB 6: MOVE TO LIGHT
+## LAB 6: GRADIENT
 
-## LAB 7: GRADIENT
+* **Objective**: For each robot to compute its distance (measured in
+number of hops) towards a distinguished root robot. We refer to this
+distance as the gradient of a robot.
 
-Lab 7: Gradient formation, using the message value
+The algorithm is very simple. The root robot starts with a gradient
+value of zero, and every other robots starts with the maximum gradient
+value (for simplicity, think of this value as being infinity).
+
+In the message transmission callback, a robot sends NO message if it has
+the maximum gradient value, and otherwise it sends a message containing
+its current gradient value.
+
+In the message reception callback, if a robot receives a message with
+gradient value `V` then it updates its own gradient value to 
+`gradient_value = min(gradient_value,V+1)`.
+
+Finally, in the main program loop robots choose the color of their LED
+based on their gradient value.
+
+Observe that the maximum distance between two robots is equal to the
+diameter of the communication graph, which can be no greater than the
+total number of robots. Therefore, by using a 16-bit value to hold the
+gradient value allows the previously described algorithm to work in
+swarms of more than 65,000 robots. Thus the only challenge in
+translating the previously described algorithm to real code, is to pack
+and unpack a 16-bit value into the 8-bit data bytes. Here is the
+pseudo-code for doing just that:
+
+```
+uint16_t gradient_value =  UINT16_MAX;
+
+//  pack gradient into message
+msg.type = NORMAL;
+msg.data[0] = gradient_value&0xFF;
+msg.data[1] = (gradient_value>>8)&0xFF;
+msg.crc = message_crc(&msg);
+
+// unpack message into gradient
+recvd_gradient = msg.data[0]  | (msg.data[1]<<8);
+```
+
+Remember to update the message (and compute the CRC) when a robot
+updates its own gradient value (and outside the message callbacks).
+
+## LAB 7: MOVE TO LIGHT
+
+* **Objective**: For each robot to move towards the direction of the
+brightest light source.
+
+This lab is the first one to measure environmental conditions using the
+sensors available at the kilobots. Specifically, we will use the ambient
+light sensor through the function `get_ambientlight()` to read the
+current value for the sensor. When a sensor cannot return a
+good reading, it returns -1.
+
+Since sensors are inherently noisy, each time we sample the current
+light we will average 300 sensor readings, discarding any bad sensor
+readings. The pseudo-code follows:
+
+```
+    int numsamples = 0
+    long average = 0
+
+    while numsamples < 300 do
+        int sample = get_ambientlight()
+        if sample != -1 then
+            average += sample
+            numsamples++
+
+    cur_light = average / 300;
+```
+
+Throughout we mantain high and low light threhsolds, initially we set
+the high threshold equal to zero, and the low threshold equal to 1024
+(observe that the high and low thresolds are initially inverted, this is
+ done on purpose to guarantee an update).
+
+In the main program loop, whenever the current light value is less than
+the low threshold, we simply update the thresholds to be +-5% difference
+of the current light value. On the other hand, if the current light
+threhsold exceeds the high threshold, then we also update the
+thresholds, and we switch the moving direction; we also insert a delay
+of 300ms to avoid switching directions repeatedly and unecessarily
+stressing the motors. The pseudo-code of the main loop looks as follows:
+
+```
+void update_thresh() {
+    high_thresh = cur_light*1.05;
+    low_thresh = cur_light*0.95;
+}
+
+void loop() {
+    sample_light();
+
+    if cur_light < low_thresh then
+        update_thresh()
+    else if cur_light > high_thresh then
+        update_thresh();
+        switch_directions();
+        delay(300);
+}
+```
+
+You must implement the switch directions function, which keeps a flag
+indicating the current direction, and switches between turning left or
+right everytime it is called. To initialize the algorithm you must set
+the robot to move in any direction (it doesn't matter which one).
