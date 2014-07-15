@@ -76,7 +76,7 @@ delay 500ms
 Compile your code. This will produce a file called
 `blinkleds.hex`. Now use the KiloGUI to upload the hex
 file to your to your kilobot and see what happens (for detailed
-info on how to use the KiloGUI, see [here](https:/www.kilobotics.com/documentation)). If you run into
+info on how to use the KiloGUI, see [here](https://www.kilobotics.com/documentation)). If you run into
 problems, take a look at the solution code above.
 
 * *Questions: (1) What is the maximum delay rounded up to seconds, that
