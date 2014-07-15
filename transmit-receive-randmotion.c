@@ -1,20 +1,18 @@
 #include <kilolib.h>
 
-// declare motion state variable type
-typedef enum {
-    STOP = 0,
-    FORWARD,
-    LEFT,
-    RIGHT
-} motion_t;
+// declare constants
+#define STOP 0
+#define FORWARD 1
+#define LEFT 2
+#define RIGHT 3
 
 // declare variables
-motion_t cur_motion = STOP;
+uint8_t cur_motion = STOP;
 uint8_t new_message = 0;
 message_t msg;
 
 // function to set new motion
-void set_motion(motion_t new_motion) {
+void set_motion(uint8_t new_motion) {
     if (cur_motion != new_motion) {
         cur_motion = new_motion;
         switch(cur_motion) {
@@ -45,6 +43,7 @@ void setup() {
 
 void loop() {
     if (new_message) {
+        // generate random 8-bit number, and extract random 2-bit number
         const uint8_t twobit_mask = 0b00000011;
         uint8_t rand_direction = rand_soft()&twobit_mask;
         if (rand_direction == 0 || rand_direction == 1)

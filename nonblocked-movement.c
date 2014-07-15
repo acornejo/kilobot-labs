@@ -1,14 +1,12 @@
 #include <kilolib.h>
 
-// declare state variable type
-typedef enum {
-    FORWARD_GREEN = 0,
-    LEFT_RED = 1,
-    RIGHT_BLUE = 2
-} state_t;
+// declare constants
+#define FORWARD_GREEN 0
+#define LEFT_RED 1
+#define RIGHT_BLUE  2
 
 // declare variables
-state_t state = FORWARD_GREEN;
+uint8_t state = FORWARD_GREEN;
 uint8_t state_needs_update = 1;
 uint32_t last_update;
 

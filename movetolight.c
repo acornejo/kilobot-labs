@@ -9,6 +9,8 @@ int cur_direction = 0;
 long cur_light = 0;
 long  high_thresh = 0, low_thresh = 1024;
 
+// To reduce noise we take the average of 300 samples, discarding
+// samples where the ADC sensor failed (returned -1).
 void sample_light() {
     int numsamples = 0;
     long average = 0;

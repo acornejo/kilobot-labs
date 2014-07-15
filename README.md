@@ -14,7 +14,10 @@ robot populations.
 * [Lab1: Movement](#lab1-movement)
 * [Lab2: Communication](#lab2-communication)
 * [Lab3: Putting It Together](#lab3-putting-it-together)
-* [Lab4 and beyond](#lab4-tbd)
+* [Lab4: Orbit](#lab4-orbit)
+* [Lab5: Sync](#lab5-sync)
+* [Lab6: Gradient](#lab6-gradient)
+* [Lab7: Move to Light](#lab7-move-to-light)
 
 ## Getting Started
 
@@ -316,6 +319,7 @@ void loop() {
         set_color(RGB(0,0,0));
     }
 }
+```
 
 Finally, as before, you must modify your main section to register the message
 reception function with the kilobot library as follows:
@@ -345,15 +349,19 @@ timer to change the message being sent once every two seconds.
 The code for switching should look similar to the way you made a state
 machine in 1.3. 
 
-First, we start by declaring an array with two messages (instead of a
+First, we start by declaring two messages (instead of a
 single message), and we use a flag to decide which message to send.
 
 ```
-uint8_t msg_idx = 0;
-message_t transmit_msg[2];
+uint8_t odd = 0;
+message_t message_odd;
+message_t message_even;
 
 message_t *message_tx() {
-    return &transmit_msg[msg_idx];
+    if (odd)
+        return &message_odd;
+    else
+        return &message_even;
 } 
 ```
 
@@ -362,11 +370,13 @@ messages in the array.
 
 ```
 void setup() {
-    for (int i = 0; i<2; i++) {
-        transmit_msg[i].type = NORMAL;
-        transmit_msg[i].data[0] = i;
-        transmit_msg[i].crc = message_crc(&transmit_msg[i]);
-    }
+    message_odd.type = NORMAL;
+    message_odd.data[0] = 1;
+    message_odd.crc = message_crc(&message_odd);
+
+    message_even.type = NORMAL;
+    message_even.data[0] = 0;
+    message_even.crc = message_crc(&message_even);
 }
 ```
 
@@ -374,10 +384,10 @@ Finally, we modify the main loop to includes code that every two seconds
 switches the message being sent.
 
 ```
-    // switch message sent every 2 seconds (64 ticks)
+    // toggle odd flag every 2 seconds (64 ticks)
     if (kilo_ticks > last_changed + 64) {
         last_changed = kilo_ticks;
-        msg_idx = (msg_idx + 1)%2;
+        odd = !odd;
     }
 ```
 
