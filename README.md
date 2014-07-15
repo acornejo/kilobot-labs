@@ -24,16 +24,21 @@ robot populations.
 The following labs assume that you have at least one overhead controller
 and two kilobots with the latest firmware, and a computer with the
 KiloGUI tool.
-Add reminder to follow the documentation for setting up the GUI
-and editor. Maybe also add helpful hints, like where in dropbox
-the files are stored and a reminder on how to use KiloGUI to
-upload a file?
+
+To setup the latest firmware on the kilobots and controller and to use
+the KiloGUI tool, follow the documentation provided
+[here](https://www.kilobotics/documentation). To follow this tutorial we
+recommend you use the kilobotics editor
+[here](https://www.kilobotics.com/editor). You will need a Dropbox
+account to store your files, which will be stored in the `Apps/KiloEdit`
+folder.
 
 ## LAB0: BLINKY
 
 * **Program:** Blink LEDS Red then Blue for 500ms each
 * **Objective:** Introduce basic code structure (i.e. `setup` and
         `loop`) and basic functions such as `set_color` and `delay`
+* **Code:** [blinkleds.c](https://github.com/acornejo/kilobot-labs/blob/master/blinkleds.c)
 
 In the Kilobotics Editor, create a new file and name it `blinkleds.c`.
 You'll see several things in the file, like `#include <kilobot.h>` which
@@ -114,6 +119,7 @@ identifier to your kilobot, if you so desire. Follow the steps below
 
 * **Program:** Move forward 2 sec, clockwise 1 sec, anticlockwise 1 sec (repeat)
 * **Objective:** Introduce `set_motors` and calibration constants `kilo_turn_left, kilo_turn_right, kilo_straight_left, kilo_straight_right`
+* **Code:** [simple-movement.c](https://github.com/acornejo/kilobot-labs/blob/master/simple-movement.c)
 
 In this lab we will make the Kilobot go through its motions --forward,
 turn left, turn right-- in a loop. To do this we will use the
@@ -143,6 +149,7 @@ delay 2000ms
 
 *  **Program:** Create a state machine with states `forward, turnleft`
 and `turnright`, switching states every second.
+* **Code:** [nonblocked-movement.c](https://github.com/acornejo/kilobot-labs/blob/master/nonblocked-movement.c)
 
 In the last two code examples, we used delay to control how long to
 wait. But that prevents the robot from doing anything else during that
@@ -217,6 +224,7 @@ for debugging for more complex programs.
 ### 2.1 test-speaker.c
 
 * **Program:** Broadcast a message continuously.
+* **Code:** [test-speaker.c](https://github.com/acornejo/kilobot-labs/blob/master/test-speaker.c)
 
 A kilobot uses infrared (IR) to broadcast a message within an
 approximately circular radius of three body lengths. Multiple robots
@@ -286,6 +294,8 @@ callback but within the main program loop or setup phase.*
 
 ### 2.2. test-listener.c
 
+* **Code:** [test-listener.c](https://github.com/acornejo/kilobot-labs/blob/master/test-listener.c)
+
 Now we will create the listener robot. We first declare a
 variable `rcvd_message` of type `message_t`
 to store any new incoming messages and a boolean
@@ -341,6 +351,8 @@ measurements, which will be explained in a later lab).
 
 ### 2.3 test-speaker-mod.c
 
+* **Code:** [test-speaker-mod.c](https://github.com/acornejo/kilobot-labs/blob/master/test-speaker-mod.c)
+
 Once you've tested the speaker and listener together, we will modify the
 speaker code to send two different messages. Specifically we will use a
 timer to change the message being sent once every two seconds.
@@ -391,6 +403,8 @@ switches the message being sent.
 
 ### 2.3 Modify test-listener.c
 
+* **Code:** [test-listener-mod.c](https://github.com/acornejo/kilobot-labs/blob/master/test-listener-mod.c)
+
 Now modify the listener code from before to read the value of the
 message by reading the value of the first byte of the recieved message.
 If the value is odd, then blink the LED blue. If the value is even, then
@@ -421,6 +435,8 @@ broadcast we used here.
 ## LAB3: PUTTING IT TOGETHER
 
 ### 3.1 Transmit-receive-randmotion.c
+
+* **Code:** [test-listener-mod.c](https://github.com/acornejo/kilobot-labs/blob/master/test-listener-mod.c)
 
 We will now create a single robot with the following behavior:
 The robot will always broadcast its own ID and always be listening
