@@ -339,8 +339,6 @@ decoded the function `message_rx()` will get called with the message and
 the distance measurements as a parameter (for now, ignore the distance
 measurements, which will be explained in a later lab).
 
-```
-
 ### 2.3 test-speaker-mod.c
 
 Once you've tested the speaker and listener together, we will modify the
