@@ -681,8 +681,8 @@ create a histogram of the differences between the value of the clock at
 the sender and the receiver. Moreover, a robot will only store the
 offset of a neighbor if the difference between the sender clock and
 receiver clock is less than half the period (16). This technique ensures
-that given two robots $A$ and $B$, either $A$ will adjust towards $B$ or
-$B$ will adjust towards $A$, but not both. This helps reduce the
+that given two robots A and B, either A will adjust towards B, or
+B will adjust towards A, but not both. This helps reduce the
 oscillations of the logical clocks.
 
 The pseudo-code to create the histogram of clock offsets follows (clock
