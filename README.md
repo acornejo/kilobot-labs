@@ -509,11 +509,15 @@ stationary robot while keeping a fixed distance.
 
 # 4.1 orbit-star.c
 
+* **Code:** [orbit-star.c](https://github.com/acornejo/kilobot-labs/blob/master/orbit-star.c)
+
 The orbit-star program is identical to the `test-speaker.c` program you
 created in LAB2. Its purpose is to serve as a stationary reference that
 constantly emits beacon messages to the oribiting robot.
 
 # 4.2 orbit-planet.c
+
+* **Code:** [orbit-planet.c](https://github.com/acornejo/kilobot-labs/blob/master/orbit-planet.c)
 
 Create a new file `orbit-planet.c` and use a starting point the contents
 of the `transmit-receive-randmotion.c` file.
@@ -585,6 +589,8 @@ else
 * **Objective**: Create a logical synchronus clock between different
 robots to allow two or more robots to blink an LED in unison roughly
 every 4 seconds.
+
+* **Code:** [sync.c](https://github.com/acornejo/kilobot-labs/blob/master/sync.c)
 
 We will use the internal clock `kilo_ticks` available at each kilobot to
 create a logical clock `modulo_clock`, which will be updated based on
@@ -679,6 +685,8 @@ using the average offset.
 number of hops) towards a distinguished root robot. We refer to this
 distance as the gradient of a robot.
 
+* **Code:** [gradient.c](https://github.com/acornejo/kilobot-labs/blob/master/gradient.c)
+
 The algorithm is very simple. The root robot starts with a gradient
 value of zero, and every other robots starts with the maximum gradient
 value (for simplicity, think of this value as being infinity).
@@ -723,6 +731,8 @@ updates its own gradient value (and outside the message callbacks).
 
 * **Objective**: For each robot to move towards the direction of the
 brightest light source.
+
+* **Code:** [move-to-light.c](https://github.com/acornejo/kilobot-labs/blob/master/move-to-light.c)
 
 This lab is the first one to measure environmental conditions using the
 sensors available at the kilobots. Specifically, we will use the ambient
