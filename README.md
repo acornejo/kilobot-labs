@@ -564,7 +564,7 @@ else
         set_motion(RIGHT)
 ```
 
-## LAB 5: Sync
+## LAB5: Sync
 
 * **Objective**: Create a logical synchronus clock between different
 robots to allow two or more robots to blink an LED in unison roughly
@@ -657,7 +657,7 @@ using the average offset.
             tick_offset += sum/total
 ```
 
-## LAB 6: GRADIENT
+## LAB6: GRADIENT
 
 * **Objective**: For each robot to compute its distance (measured in
 number of hops) towards a distinguished root robot. We refer to this
@@ -703,7 +703,7 @@ recvd_gradient = msg.data[0]  | (msg.data[1]<<8);
 Remember to update the message (and compute the CRC) when a robot
 updates its own gradient value (and outside the message callbacks).
 
-## LAB 7: MOVE TO LIGHT
+## LAB7: MOVE TO LIGHT
 
 * **Objective**: For each robot to move towards the direction of the
 brightest light source.
