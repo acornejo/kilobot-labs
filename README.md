@@ -378,14 +378,7 @@ single message), and we use a flag to decide which message to send.
 uint8_t odd = 0;
 message_t message_odd;
 message_t message_even;
-
-message_t *message_tx() {
-    if (odd)
-        return &message_odd;
-    else
-        return &message_even;
-} 
-```
+``
 
 Next use the `setup()` function to the set the initial contents of the
 messages in the array.
@@ -402,16 +395,10 @@ void setup() {
 }
 ```
 
-Finally, we modify the main loop to includes code that every two seconds
-switches the message being sent.
-
-```
-    // toggle odd flag every 2 seconds (64 ticks)
-    if (kilo_ticks > last_changed + 64) {
-        last_changed = kilo_ticks;
-        odd = !odd;
-    }
-```
+Finally, we modify the main loop to include code that toggles the `odd`
+flag every two seconds using `kilo_ticks`. In the message transition
+callback you must return a pointer to `message_odd` or `message_even`
+depending on the contents of the `odd` flag.
 
 ### 2.3 Modify test-listener.c
 * **Program:** If a received message is even and nearby, blink red. If
@@ -420,26 +407,46 @@ blink blue if nearby and cyan if far.
 * **Objective:** Introduce how to check message content and distance.
 * **Code:** [test-listener-mod.c](https://github.com/acornejo/kilobot-labs/blob/master/test-listener-mod.c)
 
-Now modify the listener code from before to read the value of the
-message by reading the value of the first byte of the recieved message.
-If the value is odd, then blink the LED blue. If the value is even, then
-blink the LED red.
 
-Further modify the code to check the distance from its
-neighbor. ADD DETAILS. 
+Now modify the listener code from before to read the value of the
+message by reading the value of the first byte of the recieved
+message. If the value is odd (or one), then blink the LED blue. If the
+value is even, then blink the LED red. Here's an example of how to
+read the value of a message.
+
+```
+void message_rx(message_t *m, distance_measurement_t *d) {
+    data = m->data[0];
+    dist_measure = *d;
+    new_message = 1;
+}
+```
+
+Once you have that working, you can do the next step, which is
+changing the behavior when the listener is close or far away from the
+speaker. If the robot is "far" (more than 50mm away) then instead of
+blue/red use cyan/magenta. Note that the diameter of a kilobot is 33
+mm. Look up `estimate_distance` in the API documentation. Here's some
+code that shows how to to use it.
+
+```
+uint8_t dist = 0;
+
+// Then in your program loop when you get a new message you can convert
+// the distance signal to a value like this
+
+dist = estimate_distance(&dist_measure);
+```
 
 Now is a good time to test your code. Compile, upload, and run your
 listener robot. Then do the same for your speaker. When the robots are
 close together the listener should be blinking blue or red as messages
 arrive. Moving the robots further away should cause the listener robot
 to blink magenta or cyan. Moving the robots even further away should
-cause the listener to stop blinking once it is outside the communication
-range.
+cause the listener to stop blinking once it is outside the
+communication range.
 
 ### 2.4 Explanation
-
-*   **Objective: ** Understand the message structure and callbacks
-system, even though we haven't used the whole power of the system yet
 
 We have only used a small part of the message structure. Read
 the API to further understand the message structure. Things to
@@ -448,8 +455,6 @@ single message from one robot to another instead of the constant
 broadcast we used here.
 
 ## LAB3: PUTTING IT TOGETHER
-
-### 3.1 Transmit-receive-randmotion.c
 
 * **Program:** Create a single robot that both
 sends and receives messages. When the robot receives a new
@@ -461,7 +466,7 @@ for cleaner and more efficient motion code.
 * **Code:** [test-listener-mod.c](https://github.com/acornejo/kilobot-labs/blob/master/test-listener-mod.c)
 
 We will now create a single robot with the following behavior:
-The robot will always broadcast its own ID and always be listening
+The robot will always broadcast a message and listen
 for messages from other robots. If the robot does not hear any
 neighboring robots, then it will turn off its motors and stand
 still. However if it hears another robot nearby, it will move randomly.
@@ -469,7 +474,7 @@ still. However if it hears another robot nearby, it will move randomly.
 Create a new file called `transmit-receive-randmotion.c`. Using your
 previous code from lab 2 as examples, modify the message callbacks so
 that the robot is transmitting a single message (set in `setup` to be
-the robot ID) and when it recives a message, it turns the LED
+the robot ID) and when it receives a message, it turns the LED
 yellow for 10ms. Feel free to test this code quickly with your two
 robots. Both should blink when they see each other.
 
@@ -525,6 +530,14 @@ turning on the LEDs, the robot also sets a direction based on the
 random number (red straight, green left, blue right).
 
 ## LAB4: ORBIT
+
+Now that we've learned all the
+basics, we will code up some fun and classic "demos" in the next few
+labs. Orbiting is a commonly used primitive - basically it allows one
+robot (the planet) to use the distance from another robot (the star)
+as a way to move. It can be extended to edge-following if there is a
+group of stars, then the planets can orbit that group of stars. We use
+edge-following in many algorithms.
 
 * **Objective**: Use distance sensing to have one robot orbit another
 stationary robot while keeping a fixed distance.
@@ -608,6 +621,18 @@ else
 
 ## LAB5: Sync
 
+Spontaneous synchronization is a classic collective behavior in nature,
+            from heart cells to fireflies, and there are many ways in
+            which individuals can synchronize to their neighbor. Here we
+            will use a method that relies on averaging. Each robot acts
+            as an oscillator, flashing its LED in a fixed period. But
+            when it hears other robots flash, it collects that
+            information and uses the average to make an adjustment to
+            its own next flashing time. Sometimes this can be hard to
+            get right, so there's quite a few hints on how to do it
+            below. After you've tested your code on two robots, its fun
+            to test with a whole collective!
+
 * **Objective**: Create a logical synchronus clock between different
 robots to allow two or more robots to blink an LED in unison roughly
 every 4 seconds.
@@ -619,7 +644,7 @@ create a logical clock `modulo_clock`, which will be updated based on
 the logical clock of neighboring robots. Specifically our `modulo_clock`
 will be a 5-bit clock and only take values from 0 to 31 (i.e. 2^5=32
 different values). Each robot will blink their LED and update their
-clock `modulo_clock` is equal to zero. Since `kilo_ticks` is incremented
+clock when `modulo_clock` is equal to zero. Since `kilo_ticks` is incremented
 roughly 32 times per second, and we want robots to blink roughly once
 every four seconds, then we will let `modulo_clock=(kilo_ticks/4)%32`.
 
@@ -712,15 +737,13 @@ distance as the gradient of a robot.
 The algorithm is very simple. The root robot starts with a gradient
 value of zero, and every other robots starts with the maximum gradient
 value (for simplicity, think of this value as being infinity).
-
-In the message transmission callback, a robot sends NO message if it has
-the maximum gradient value, and otherwise it sends a message containing
-its current gradient value.
-
+In the message transmission callback, a robot sends NO message (simply
+do `return '\0'` in the transmission calback) if it has the
+maximum gradient value, and otherwise it sends a message containing its
+current gradient value.
 In the message reception callback, if a robot receives a message with
 gradient value `V` then it updates its own gradient value to 
 `gradient_value = min(gradient_value,V+1)`.
-
 Finally, in the main program loop robots choose the color of their LED
 based on their gradient value.
 
@@ -748,6 +771,12 @@ recvd_gradient = msg.data[0]  | (msg.data[1]<<8);
 
 Remember to update the message (and compute the CRC) when a robot
 updates its own gradient value (and outside the message callbacks).
+
+Also you will need to have exactly one "root" robot. For that purpose
+you should use the calibration section of KiloGUI to set a special
+unique identifier for a robot (for example `1000`), and modify your code
+to check `kilo_uid` and set the gradient value to zero if `kilo_uid ==
+1000`.
 
 ## LAB7: MOVE TO LIGHT
 
@@ -779,17 +808,17 @@ readings. The pseudo-code follows:
     cur_light = average / 300
 ```
 
-Throughout we mantain high and low light threhsolds, initially we set
+Throughout we maintain high and low light thresholds, initially we set
 the high threshold equal to zero, and the low threshold equal to 1024
-(observe that the high and low thresolds are initially inverted, this is
+(observe that the high and low thresholds are initially inverted, this is
  done on purpose to guarantee an update).
 
 In the main program loop, whenever the current light value is less than
 the low threshold, we simply update the thresholds to be +-5% difference
 of the current light value. On the other hand, if the current light
-threhsold exceeds the high threshold, then we also update the
+threshold exceeds the high threshold, then we also update the
 thresholds, and we switch the moving direction; we also insert a delay
-of 300ms to avoid switching directions repeatedly and unecessarily
+of 300ms to avoid switching directions repeatedly and unnecessarily
 stressing the motors. The pseudo-code of the main loop looks as follows:
 
 ```
@@ -812,5 +841,12 @@ void loop() {
 
 You must implement the switch directions function, which keeps a flag
 indicating the current direction, and switches between turning left or
-right everytime it is called. To initialize the algorithm you must set
+right every time it is called. To initialize the algorithm you must set
 the robot to move in any direction (it doesn't matter which one).
+
+To test your code, go to a room without windows (or close all the
+shades), and turn on a single directed light source (a desk lamp
+works well) and pointed towards the robot. The robot should
+start turning until it faces the late, and then switch back and
+forth between turning left and right as it moves towards the
+light source.
