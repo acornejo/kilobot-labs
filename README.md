@@ -76,7 +76,7 @@ delay 500ms
 Compile your code. This will produce a file called
 `blinkleds.hex`. Now use the KiloGUI to upload the hex
 file to your to your kilobot and see what happens (for detailed
-info on how to use the KiloGUI, see here (link)). If you run into
+info on how to use the KiloGUI, see [here](https:/www.kilobotics.com/documentation)). If you run into
 problems, take a look at the solution code above.
 
 * *Questions: (1) What is the maximum delay rounded up to seconds, that
@@ -125,13 +125,14 @@ In this lab we will make the Kilobot go through its motions --forward,
 turn left, turn right-- in a loop. To do this we will use the
 function `set_motors` that takes values for each of the two motors,
 and we will use the calibrated constants that we set in Lab 1.1. Read
-the API page (link) to see how to use `set_motors`. There's one
+the [API page](https://www.kilobotics.com/docs/index.html) to see how to use `set_motors`. There's one
 important caveat. When the motors are first turned on, we must set
 the motors to the maximum speed for 15 ms or so, in order for the
 kilobot to overcome static friction. We call this spinning up the
 motors. Therefore, for the robot to move it must first spin up the
 motors and then set its desired motion. Motors need to be spinup
-every time the robot changes its direction of motion.
+every time the robot changes its direction of motion. This can be done
+through the `spinup_motors` function, also described in the [API page](https://www.kilobotics.com/docs/index.html).
 
 Create a file called `simple-movement.c`. Here's the
 pseudocode you need to write. Then compile, upload and run your code!
@@ -149,6 +150,7 @@ delay 2000ms
 
 *  **Program:** Create a state machine with states `forward, turnleft`
 and `turnright`, switching states every second.
+* **Objective:** Introduce the `kilo_ticks` clock.
 * **Code:** [nonblocked-movement.c](https://github.com/acornejo/kilobot-labs/blob/master/nonblocked-movement.c)
 
 In the last two code examples, we used delay to control how long to
@@ -224,6 +226,8 @@ for debugging for more complex programs.
 ### 2.1 test-speaker.c
 
 * **Program:** Broadcast a message continuously.
+* **Objective:** Introduce the `message_t` data structure, and the
+`kilo_message_tx` callback.
 * **Code:** [test-speaker.c](https://github.com/acornejo/kilobot-labs/blob/master/test-speaker.c)
 
 A kilobot uses infrared (IR) to broadcast a message within an
@@ -288,12 +292,16 @@ the speaker code. You can compile and upload, but the real test
 will be once we have created the listener robot.
 
 * *Note: Lecturer may need to explain the difference in the C language
-between `&#42;msg`, `&amp;msg` and  `msg`. Also explain why the
+between `&msg`, `*msg` and  `msg`. Also explain why the
 message value and crc should not be set within the
 callback but within the main program loop or setup phase.*
 
 ### 2.2. test-listener.c
 
+* **Program:** If a received message is even, blink red, if odd, blink
+blue. If no message is being detected, then led should be off.
+* **Objective:** Introduce the `kilo_message_rx` callback and store
+incoming messages.
 * **Code:** [test-listener.c](https://github.com/acornejo/kilobot-labs/blob/master/test-listener.c)
 
 Now we will create the listener robot. We first declare a
@@ -351,6 +359,10 @@ measurements, which will be explained in a later lab).
 
 ### 2.3 test-speaker-mod.c
 
+* **Program:** Change the transmitted message
+every 1 second between "5" to "6".
+* **Objective:** Explain how to change
+transmitted message in the program code.
 * **Code:** [test-speaker-mod.c](https://github.com/acornejo/kilobot-labs/blob/master/test-speaker-mod.c)
 
 Once you've tested the speaker and listener together, we will modify the
@@ -402,7 +414,10 @@ switches the message being sent.
 ```
 
 ### 2.3 Modify test-listener.c
-
+* **Program:** If a received message is even and nearby, blink red. If
+it is even and further, blink magenta. If a recieved message is odd,
+blink blue if nearby and cyan if far.
+* **Objective:** Introduce how to check message content and distance.
 * **Code:** [test-listener-mod.c](https://github.com/acornejo/kilobot-labs/blob/master/test-listener-mod.c)
 
 Now modify the listener code from before to read the value of the
@@ -436,6 +451,13 @@ broadcast we used here.
 
 ### 3.1 Transmit-receive-randmotion.c
 
+* **Program:** Create a single robot that both
+sends and receives messages. When the robot receives a new
+message from a neighbor, it should pick a random direction to
+move in (50% straight, 25% left, 25% right).
+* **Objective:** Put communication and motion
+together, introduce `rand_soft()`, and create subroutine
+for cleaner and more efficient motion code.
 * **Code:** [test-listener-mod.c](https://github.com/acornejo/kilobot-labs/blob/master/test-listener-mod.c)
 
 We will now create a single robot with the following behavior:
@@ -454,7 +476,7 @@ robots. Both should blink when they see each other.
 As the next step, modify the code above so that the robot
 chooses randomly between three different colors to flash when it
 gets a message. The code below show how to use the
-function `soft_rand()` to pick red with 50% probability, green with 25%
+function `rand_soft()` to pick red with 50% probability, green with 25%
 probability, and blue with 25% probability. To do this, we first select
 2 bits of the 8-bit random number, and then make the decision based on
 the four possible values these 2-bits can take (each of these values is
@@ -754,7 +776,7 @@ readings. The pseudo-code follows:
             average += sample
             numsamples++
 
-    cur_light = average / 300;
+    cur_light = average / 300
 ```
 
 Throughout we mantain high and low light threhsolds, initially we set
@@ -772,19 +794,19 @@ stressing the motors. The pseudo-code of the main loop looks as follows:
 
 ```
 void update_thresh() {
-    high_thresh = cur_light*1.05;
-    low_thresh = cur_light*0.95;
+    high_thresh = cur_light*1.05
+    low_thresh = cur_light*0.95
 }
 
 void loop() {
-    sample_light();
+    sample_light()
 
     if cur_light < low_thresh then
         update_thresh()
     else if cur_light > high_thresh then
-        update_thresh();
-        switch_directions();
-        delay(300);
+        update_thresh()
+        switch_directions()
+        delay(300)
 }
 ```
 
