@@ -378,7 +378,7 @@ single message), and we use a flag to decide which message to send.
 uint8_t odd = 0;
 message_t message_odd;
 message_t message_even;
-``
+```
 
 Next use the `setup()` function to the set the initial contents of the
 messages in the array.
