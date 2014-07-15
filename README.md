@@ -783,7 +783,7 @@ to check `kilo_uid` and set the gradient value to zero if `kilo_uid ==
 * **Objective**: For each robot to move towards the direction of the
 brightest light source.
 
-* **Code:** [move-to-light.c](https://github.com/acornejo/kilobot-labs/blob/master/move-to-light.c)
+* **Code:** [movetolight.c](https://github.com/acornejo/kilobot-labs/blob/master/movetolight.c)
 
 This lab is the first one to measure environmental conditions using the
 sensors available at the kilobots. Specifically, we will use the ambient
