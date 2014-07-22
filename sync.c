@@ -34,6 +34,7 @@ void setup() {
         msgs[i].crc = message_crc(&msgs[i]);
         offsets[i] = 0;
     }
+    kilo_ticks += (rand_hard())<<2;
 }
 
 void loop() {
