@@ -8,7 +8,7 @@ message_t msg;
 void message_rx(message_t *m, distance_measurement_t *d) {
     new_message = 1;
     // unpack two 8-bit integers into one 16-bit integer
-    recvd_gradient = msg.data[0]  | (msg.data[1]<<8);
+    recvd_gradient = m->data[0]  | (m->data[1]<<8);
 }
 
 message_t *message_tx() {
