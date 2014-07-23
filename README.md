@@ -27,7 +27,7 @@ KiloGUI tool.
 
 To setup the latest firmware on the kilobots and controller and to use
 the KiloGUI tool, follow the documentation provided
-[here](https://www.kilobotics/documentation). To follow this tutorial we
+[here](https://www.kilobotics.com/documentation). To follow this tutorial we
 recommend you use the kilobotics editor
 [here](https://www.kilobotics.com/editor). You will need a Dropbox
 account to store your files, which will be stored in the `Apps/KiloEdit`
