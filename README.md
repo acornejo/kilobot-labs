@@ -808,45 +808,54 @@ readings. The pseudo-code follows:
     cur_light = average / 300
 ```
 
-Throughout we maintain high and low light thresholds, initially we set
-the high threshold equal to zero, and the low threshold equal to 1024
-(observe that the high and low thresholds are initially inverted, this is
- done on purpose to guarantee an update).
+In this lab, we will require a dark room (no windows) and a single
+light source (i.e. a desk lamp with an incandescent bulb).
 
-In the main program loop, whenever the current light value is less than
-the low threshold, we simply update the thresholds to be +-5% difference
-of the current light value. On the other hand, if the current light
-threshold exceeds the high threshold, then we also update the
-thresholds, and we switch the moving direction; we also insert a delay
-of 300ms to avoid switching directions repeatedly and unnecessarily
-stressing the motors. The pseudo-code of the main loop looks as follows:
+In such a setting, if an idealized kilobot were to perform a series of uninterrupted
+turns, then the readings
+returned by the ambient light sensor will look like a sine
+curve, where the peaks represent the moments where the sensor is facing
+directly at the light source, and the valleys occur at the moments where
+the sensor is facing away from the light source. 
+
+In reality, due to sensor noise and the placement of the sensor, this
+actual readings will differ from idealized setting, but its still
+possible to classify the curve as being in a peak or a valley.
+
+To get the robot to steer towards the light, we will aim to detect the
+moment when the sensor transitions from being on a peak, and being on a
+valley. Concretely, if the sensor reading is greater than 600 we will
+say the curve is in the peak region, and if its lower than 300 we will
+say the curve is in the valley region.
+
+Whenever a valley condition is detected, the robot will set its motors
+to turn right, and whenever a peak condition is detected, the robot will
+set its motors to turn left. The net effect of this, is that the robot
+will move forward at the point where the sensor readings transition from
+a valley to a peak. We present some pseudo-code below.
 
 ```
-void update_thresh() {
-    high_thresh = cur_light*1.05
-    low_thresh = cur_light*0.95
+void setup() {
+    cur_direction = LEFT
+    set motors to turn left
 }
 
 void loop() {
     sample_light()
-
-    if cur_light < low_thresh then
-        update_thresh()
-    else if cur_light > high_thresh then
-        update_thresh()
-        switch_directions()
-        delay(300)
+    if cur_direction is LEFT then
+        if cur_light is valley
+            cur_direction = RIGHT
+            set motors to turn right
+    else if cur_direction is RIGHT then
+        if cur_light is peak
+            cur_direction = LEFT
+            set motors to turn left
 }
 ```
 
-You must implement the switch directions function, which keeps a flag
-indicating the current direction, and switches between turning left or
-right every time it is called. To initialize the algorithm you must set
-the robot to move in any direction (it doesn't matter which one).
-
-To test your code, go to a room without windows (or close all the
-shades), and turn on a single directed light source (a desk lamp
-works well) and pointed towards the robot. The robot should
-start turning until it faces the late, and then switch back and
-forth between turning left and right as it moves towards the
-light source.
+To test your code make sure you are in a room without windows (or close
+all the shades), and turn on a single directed light source (a
+desk lamp works well) and pointed towards the robot. The
+robot should start turning until it faces the light, and then
+switch back and forth between turning left and right as it moves
+towards the light source.
