@@ -51,8 +51,17 @@ build:
 build/%.elf: %.c $(KILOLIB)  | build
 	$(CC) $(CFLAGS) -o $@ $< $(KILOLIB)
 
+define LABS_TEMPLATE
+<div class="container">
+$$body$$
+</div>
+endef
+export LABS_TEMPLATE
+
 docs:
+	@echo "$$LABS_TEMPLATE" > labs.template
 	pandoc --from markdown+fenced_code_blocks+ignore_line_breaks --to html --template labs.template README.md --output labs.html
+	@rm -f labs.template
 
 clean:
 	rm -fR build
