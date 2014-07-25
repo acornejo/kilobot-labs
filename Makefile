@@ -51,6 +51,9 @@ build:
 build/%.elf: %.c $(KILOLIB)  | build
 	$(CC) $(CFLAGS) -o $@ $< $(KILOLIB)
 
+docs:
+	pandoc --from markdown_github --to html --standalone README.md --output labs.html
+
 clean:
 	rm -fR build
 	rm -f $(KILOLIB)
