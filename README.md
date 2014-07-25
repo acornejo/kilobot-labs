@@ -1,4 +1,3 @@
-<div class="container">
 # Workshop
 
 These labs are part of a workshop funded by NSF to make
@@ -860,4 +859,3 @@ desk lamp works well) and pointed towards the robot. The
 robot should start turning until it faces the light, and then
 switch back and forth between turning left and right as it moves
 towards the light source.
-</div>
