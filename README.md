@@ -1,4 +1,4 @@
-# Workshop
+# Kilobot Labs
 
 These labs are part of a workshop funded by NSF to make
 programming the kilobots accessible to students and scientists
