@@ -98,7 +98,7 @@ right, and going straight. In the process you can also assign a unique
 identifier to your kilobot, if you so desire. Follow the steps below
 
 1.  Open up the KiloGUI program and click on the Calibration button, you
-    will be presented with the following screen. ![](//raw.github.com/acornejo/kilogui/docs/calib.png)
+    will be presented with the following screen. ![](https://raw.github.com/acornejo/kilogui/docs/calib.png)
 2.  Select a value for turning left, click test to tell the robot to
     move using this value. Values between 60 and 75 work best for
     turning, but this will depend on your robot on the surface being
