@@ -27,8 +27,8 @@ KiloGUI tool.
 
 To setup the latest firmware on the kilobots and controller and to use
 the KiloGUI tool, follow the documentation provided
-[here](https://www.kilobotics.com/documentation). To follow this tutorial we
-recommend you use the kilobotics editor
+[here](https://www.kilobotics.com/documentation). To follow this
+tutorial we recommend you use the kilobotics editor
 [here](https://www.kilobotics.com/editor). You will need a Dropbox
 account to store your files, which will be stored in the `Apps/KiloEdit`
 folder.
@@ -541,6 +541,7 @@ edge-following in many algorithms.
 
 * **Objective**: Use distance sensing to have one robot orbit another
 stationary robot while keeping a fixed distance.
+* **Video**: [link](https://www.youtube.com/watch?v=EOEh9xnLB_0)
 
 # 4.1 orbit-star.c
 
@@ -622,20 +623,20 @@ else
 ## LAB5: Sync
 
 Spontaneous synchronization is a classic collective behavior in nature,
-            from heart cells to fireflies, and there are many ways in
-            which individuals can synchronize to their neighbor. Here we
-            will use a method that relies on averaging. Each robot acts
-            as an oscillator, flashing its LED in a fixed period. But
-            when it hears other robots flash, it collects that
-            information and uses the average to make an adjustment to
-            its own next flashing time. Sometimes this can be hard to
-            get right, so there's quite a few hints on how to do it
-            below. After you've tested your code on two robots, its fun
-            to test with a whole collective!
+from heart cells to fireflies, and there are many ways in which
+individuals can synchronize to their neighbor. Here we will use a method
+that relies on averaging. Each robot acts as an oscillator, flashing its
+LED in a fixed period. But when it hears other robots flash, it collects
+that information and uses the average to make an adjustment to its own
+next flashing time. Sometimes this can be hard to get right, so there's
+quite a few hints on how to do it below. After you've tested your code
+on two robots, its fun to test with a whole collective!
 
 * **Objective**: Create a logical synchronus clock between different
 robots to allow two or more robots to blink an LED in unison roughly
 every 4 seconds.
+
+* **Video**: [link](https://www.youtube.com/watch?v=NK-n786jw4Y)
 
 * **Code:** [sync.c](https://github.com/acornejo/kilobot-labs/blob/master/sync.c)
 
@@ -733,6 +734,7 @@ number of hops) towards a distinguished root robot. We refer to this
 distance as the gradient of a robot.
 
 * **Code:** [gradient.c](https://github.com/acornejo/kilobot-labs/blob/master/gradient.c)
+* **Video**: [link](https://www.youtube.com/watch?v=Z2nLhx3hMwI)
 
 The algorithm is very simple. The root robot starts with a gradient
 value of zero, and every other robots starts with the maximum gradient
@@ -784,6 +786,7 @@ to check `kilo_uid` and set the gradient value to zero if `kilo_uid ==
 brightest light source.
 
 * **Code:** [movetolight.c](https://github.com/acornejo/kilobot-labs/blob/master/movetolight.c)
+* **Video**: [link](https://www.youtube.com/watch?v=pd1CseHrvA8)
 
 This lab is the first one to measure environmental conditions using the
 sensors available at the kilobots. Specifically, we will use the ambient
